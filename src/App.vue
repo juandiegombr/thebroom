@@ -1,19 +1,20 @@
 <template>
   <div id="app">
     <TheGameArea/>
-    <!-- <div class="game-area">
-      <Card v-for="(card, i) in $store.state.deck" :key="i" :index="i" :card="card"/>
-    </div> -->
-      <Card v-for="(card, i) in $store.state.hands[0].cards" :key="i + 10" :index="i" :card="card"/>
-      <Card v-for="(card, i) in $store.state.hands[1].cards" :key="i + 20" :index="i" :card="card"/>
-      <Card v-for="(card, i) in $store.state.commonCards" :key="i" :index="i" :card="card"/>
+    <ThePlayer/>
+    <TheDealer/>
+    <TheCommonCards/>
   </div>
 </template>
 
 <script>
 import TheGameArea from '@/components/TheGameArea'
+import ThePlayer from '@/components/ThePlayer'
+import TheDealer from '@/components/TheDealer'
+import TheCommonCards from '@/components/TheCommonCards'
 import Card from '@/components/Card'
 export default {
+  name: 'app',
   computed: {
     cards () {
       return this.$store.state.facedDownCards
@@ -24,7 +25,10 @@ export default {
   },
   components: {
     Card,
-    TheGameArea
+    TheGameArea,
+    ThePlayer,
+    TheDealer,
+    TheCommonCards
   }
 }
 </script>
@@ -41,6 +45,10 @@ body {
   text-align: center;
   color: #2c3e50;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 #nav {
   padding: 30px;

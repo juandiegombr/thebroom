@@ -86,14 +86,14 @@ export default new Vuex.Store({
     startDeal ({commit, dispatch}) {
       const dealQueue = [0, 1, 0, 1, 0, 1]
       dealQueue.forEach((handIndex, i) => {
-        setTimeout(() => { commit('deal', handIndex) }, 1000 * i)
+        setTimeout(() => { commit('deal', handIndex) }, 500 * i)
       })
-      setTimeout(() => { dispatch('startDealCommonCards') }, 1000 * dealQueue.length - 1)
+      setTimeout(() => { dispatch('startDealCommonCards') }, 500 * dealQueue.length - 1)
     },
     startDealCommonCards ({commit}) {
       const commonCards = 4
       for (let i = 0; i < commonCards; i++) {
-        setTimeout(() => { commit('deal', 'commonCard') }, 1000 * i)
+        setTimeout(() => { commit('deal', 'commonCard') }, 500 * i)
       }
     }
   }
