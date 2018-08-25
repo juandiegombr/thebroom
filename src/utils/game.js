@@ -18,7 +18,7 @@ function shuffle (deck) {
 
 export const createDeck = () => {
   let deck = []
-  const values = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+  const values = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
   const suits = ['sword', 'gold', 'heart', 'wood']
   values.forEach(value => {
     suits.forEach(suit => {
@@ -42,7 +42,8 @@ export const setIndex = (deck) => {
     return {
       index,
       ...card,
-      facedDown: false
+      facedDown: false,
+      selected: false
     }
   })
 }
@@ -78,7 +79,7 @@ const card3 = {
   value: 4
 }
 
-function getAllCombinations(commonCards) {
+export const getAllCombinations = (commonCards) => {
   let combinations = []
   let temp = {
     quantity: 0,
@@ -86,14 +87,14 @@ function getAllCombinations(commonCards) {
   }
   const totalCombinations = Math.pow(2, commonCards.length)
   for ( let i = 0; i < totalCombinations; i++) {
-    temp = {}
+    temp = { quantity: 0, cards: []}
     for ( let j = 0; j < commonCards.length; j++) {
       if ((i & Math.pow(2, j))) {
         temp.quantity += commonCards[j].value
         temp.cards.push(commonCards[j])
       }
     }
-    if (temp !== 0) {
+    if (temp.quantity !== 0) {
       combinations.push(temp)
     }
   }
@@ -212,12 +213,80 @@ const combinations2 = [
   }
 ]
 
-function getPlays(hand, combinations) {
-  let plays = []
+export const getPlays = (hand, combinations) => {
+  let handPlays = []
   for (let i = 0; i < hand.length; i++) {
-    const quantityNedded = 15 - hand[i]
-    const matched = combinations.filter(item => item.quantity === quantityNedded)
-    plays.push(matched)
+    const quantityNedded = 15 - hand[i].value
+    const cardPlays = combinations.filter(item => item.quantity === quantityNedded)
+    const playsWithCard = cardPlays.map(play => {
+      play.cards.push(hand[i])
+      return play
+    })
+    handPlays.push(playsWithCard)
   }
+  return handPlays
+}
+export const getPlaysSingleCard = (card, combinations) => {
+  let plays = []
+  const quantityNedded = 15 - card.value
+  const matched = combinations.filter(item => item.quantity === quantityNedded)
+  plays.push(matched)
   return plays
+}
+
+export const hasGoldSeven = (handPlays) => {
+  for (let i = 0; i < handPlays.length; i++) {
+    const cardPlays = handPlays[i]
+    for (let j = 0; j < cardPlays.length; j++) {
+      const cards = cardPlays[j].cards
+      for (let k = 0; k < cards.length; k++) {
+        const card = cards[k]
+        if (isGoldSeven(card)) {
+          // console.log('break gold seven', i, j, k)
+          return `${i}${j}${k}`
+        }
+        if (isSeven(card)) {
+          // console.log('break seven', i, j, k)
+          return `${i}${j}${k}`
+        }
+        if (isGold(card)) {
+          // console.log('break gold', i, j, k)
+          return `${i}${j}${k}`
+        }
+        // console.log('no lucky', i, j, k)
+      }
+    }    
+  }
+}
+
+export const isFifteen = (play) => {
+}
+
+export const isGoldSeven = (card) => {
+  if (card.value === 7 && card.suit === 'gold') {
+    // console.log('gold seven!!')
+    return true
+  }
+  return false
+}
+export const isSeven = (card) => {
+  if (card.value === 7) {
+    // console.log('seven!!')
+    return true
+  }
+  return false
+}
+export const isGold = (card) => {
+  if (card.suit === 'gold') {
+    // console.log('gold!!')
+    return true
+  }
+  return false
+}
+export const hasMoreCards = (card) => {
+  if (card.suit === 'gold') {
+    // console.log('gold!!')
+    return true
+  }
+  return false
 }

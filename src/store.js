@@ -7,63 +7,96 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    isSecondCard: false,
-    facedUpCards: [],
-    matchedCards: [],
-    deck: [],
     broomDeck: [],
     hands: [{cards: []},{cards: []}],
-    commonCards: []
+    commonCards: [],
+    selectedCards: [],
+    selectedOwnCard: false,
+    playerCardsWinned: [],
+    dealerCardsWinned: [],
+    turn: 'player',
+    deal: 0,
+    results: {
+      player: {},
+      dealer: {}
+    }
   },
   mutations: {
-    setNewDeck (state, deck) {
-      state.deck = deck
-    },
     setNewBroomDeck (state, deck) {
       state.broomDeck = deck
     },
-    setSecondCard (state, value) {
-      state.isSecondCard = value
-    },
-    setFacedUp (state, index) {
-      state.deck[index].facedDown = !state.deck[index].facedDown
-    },
-    setFacedDownAll (state) {
-      state.deck = state.deck.map(card => {
-        return {
-          ...card,
-          facedDown: true
-        }
-      })
-    },
-    setCardFacedUp (state, card) {
-      state.facedUpCards.push(card)
-    },
-    resetFacedUpCards (state) {
-      state.facedUpCards = []
-    },
-    areEquals (state) {
-      state.matchedCards.push(...state.facedUpCards)
-    },
     deal (state, handIndex) {
+      const hands = ['player', 'dealer']
       let firstCardOfDeck = state.broomDeck.shift()
       if (handIndex === 'commonCard') {
+        firstCardOfDeck.player = 'common'
         state.commonCards.push(firstCardOfDeck)
         return
       }
+      firstCardOfDeck.player = hands[handIndex]
       const hand = state.hands[handIndex]
       hand.cards.push(firstCardOfDeck)
     },
+    selectCard (state, {card, index, player}) {
+      const players = {
+        'player': state.hands[0].cards,
+        'dealer': state.hands[1].cards,
+        'common': state.commonCards
+      }
+      state.selectedCards.push(card)
+      players[player][index].selected = true
+    },
+    deselectCard (state, {card, index, player}) {
+      const players = {
+        'player': state.hands[0].cards,
+        'dealer': state.hands[1].cards,
+        'common': state.commonCards
+      }
+      players[player][index].selected = false
+      state.selectedCards.forEach((selectedCard, i) => {
+        if (selectedCard.value === card.value && selectedCard.suit === card.suit) {
+          state.selectedCards.splice(i, 1)
+        }
+      })
+    },
+    removePlayedCard (state, {player, index}) {
+      const players = [state.hands[0].cards, state.hands[1].cards, state.commonCards]
+      const playersCardsWinned = {
+        'player': state.playerCardsWinned,
+        'dealer': state.dealerCardsWinned
+      }
+      const cardPlayed = players[player].splice(index, 1)
+      playersCardsWinned[state.turn].push(cardPlayed[0])
+    },
+    resetSelectedCards (state) {
+      state.selectedCards = []
+    },
+    changeTurn (state) {
+      const turns = {
+        'player': 'dealer',
+        'dealer': 'player'
+      }
+      state.turn = turns[state.turn]
+    },
+    setCardToCommonCards (state, {player, card}) {
+      const newPlayerHand = state.hands[player].cards.filter(card => !card.selected)
+      state.hands[player].cards = newPlayerHand
+      card.selected = false
+      card.player = 'common'
+      state.commonCards.push(card)
+    },
+    dealDid (state) {
+      state.deal++
+    },
+    setResults (state, results) {
+      state.results = results
+    }
   },
   actions: {
     startBroomGame ({commit, dispatch}) {
       let deck = prepareDeck()
       commit('setNewBroomDeck', deck)
       dispatch('startDeal')
-    },
-    startGame ({commit}) {
-      let deck = setIndex(setFacedDown(createDeck()))
-      commit('setNewDeck', deck)
     },
     setClickedCard ({commit, state}, card) {
       if (state.isSecondCard) {
@@ -83,18 +116,84 @@ export default new Vuex.Store({
         commit('resetFacedUpCards')
       }, 2000)
     },
-    startDeal ({commit, dispatch}) {
+    startDeal ({commit, dispatch, state}) {
       const dealQueue = [0, 1, 0, 1, 0, 1]
       dealQueue.forEach((handIndex, i) => {
-        setTimeout(() => { commit('deal', handIndex) }, 500 * i)
+        setTimeout(() => { commit('deal', handIndex) }, 10 * i)
       })
-      setTimeout(() => { dispatch('startDealCommonCards') }, 500 * dealQueue.length - 1)
+      if (state.deal === 0) {
+        setTimeout(() => { dispatch('startDealCommonCards') }, 10 * dealQueue.length - 1)
+      }
+      commit('dealDid')
     },
     startDealCommonCards ({commit}) {
       const commonCards = 4
       for (let i = 0; i < commonCards; i++) {
-        setTimeout(() => { commit('deal', 'commonCard') }, 500 * i)
+        setTimeout(() => { commit('deal', 'commonCard') }, 10 * i)
       }
+    },
+    correctPlay ({commit, state}) {
+      const turns = ['player', 'dealer']
+      const currentHandIndex = turns.indexOf(state.turn)
+      state.selectedCards.forEach((selectedCard, index) => {
+        for (let i = 0; i < state.hands[currentHandIndex].cards.length; i++) {
+          const playerCard = state.hands[currentHandIndex].cards[i];
+          if (playerCard.value === selectedCard.value && playerCard.suit === selectedCard.suit) {
+            console.log('removing player card')
+            commit('removePlayedCard', {player: currentHandIndex, index: i})
+            break
+          }
+        }
+        for (let i = 0; i < state.commonCards.length; i++) {
+          const commonCard = state.commonCards[i];
+          if (commonCard.value === selectedCard.value && commonCard.suit === selectedCard.suit) {
+            console.log('removing common card')
+            commit('removePlayedCard', {player: 2, index: i})
+          }
+        }
+      })
+      commit('changeTurn')
+      commit('resetSelectedCards')
+    },
+    pass ({commit, state}, {player, card}) {
+      commit('setCardToCommonCards', {player, card})
+      commit('resetSelectedCards')
+      commit('changeTurn')
+    },
+    result ({commit, state}) {
+      const player = {
+        cards: state.playerCardsWinned.length,
+        goldSeven: state.playerCardsWinned.filter(card => card.value === 7 && card.suit === 'gold').length,
+        seven: state.playerCardsWinned.filter(card => card.value === 7).length,
+        gold: state.playerCardsWinned.filter(card => card.suit === 'gold').length
+      }
+      const dealer = {
+        cards: state.dealerCardsWinned.length,
+        goldSeven: state.dealerCardsWinned.filter(card => card.value === 7 && card.suit === 'gold').length,
+        seven: state.dealerCardsWinned.filter(card => card.value === 7).length,
+        gold: state.dealerCardsWinned.filter(card => card.suit === 'gold').length
+      }
+      const points = {
+        player: 0,
+        dealer: 0,
+        winner: null
+      }
+      for (const key in player) {
+        if (player[key] > dealer[key]) {
+          points.player++
+        } else {
+          points.dealer++
+        }
+      }
+      if (points.player > points.dealer) {
+        points.winner = 'player'
+      } else {
+        points.winner = 'dealer'
+      }
+      commit('setResults', {player, dealer, points})
     }
+  },
+  getters: {
+    getCommonCard: state => state.commonCards
   }
 })

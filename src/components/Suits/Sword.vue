@@ -1,5 +1,6 @@
 <template>
   <div class="sword">
+    <img src="@/assets/images/sword.svg" alt="">
   </div>
 </template>
 
@@ -15,8 +16,5 @@ export default {
 <style lang="scss">
 .sword {
   width: 40%;
-  padding-top: 120%;
-  background-color: rgb(20, 145, 255);
-  border-radius: 5px;
 }
 </style>

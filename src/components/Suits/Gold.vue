@@ -1,12 +1,18 @@
 <template>
   <div class="gold">
+    <img src="@/assets/images/gold.svg" alt="">
   </div>
 </template>
-
 <script>
+import goldIcon from '@/assets/images/gold.svg'
 export default {
   name: 'Sword',
   props: {
+  },
+  computed: {
+    goldIcon () {
+      return goldIcon
+    }
   }
 }
 </script>
@@ -15,8 +21,5 @@ export default {
 <style lang="scss">
 .gold {
   width: 100%;
-  padding-top: 100%;
-  background-color: rgb(255, 212, 20);
-  border-radius: 50%;
 }
 </style>
