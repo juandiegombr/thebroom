@@ -5,7 +5,6 @@
     <TheDealer/>
     <TheCommonCards/>
     <ThePlayButton/>
-    <MessageOk/>
     <!-- <Cardtest v-if="card" :card="card" :index="0"/> -->
   </div>
 </template>

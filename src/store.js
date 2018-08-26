@@ -37,6 +37,25 @@ export default new Vuex.Store({
       const hand = state.hands[handIndex]
       hand.cards.push(firstCardOfDeck)
     },
+    dealerSelectedCards (state, cards) {
+      state.selectedCards = cards
+      const dealerSelectedCard = cards.filter(card => card.player === 'dealer')[0]
+      const dealerCards = state.hands[1].cards
+      const commonSelectedCard = cards.filter(card => card.player === 'common')
+      const commonCards = state.commonCards
+      dealerCards.forEach((el, i) => {
+        if (el.suit === dealerSelectedCard.suit && el.value === dealerSelectedCard.value) {
+          dealerCards[i].selected = true
+        }
+      })
+      commonSelectedCard.forEach((selectCard, i) => {
+        commonCards.forEach((commonCard, j) => {
+          if (selectCard.suit === commonCard.suit && selectCard.value === commonCard.value) {
+            commonCards[j].selected = true
+          }
+        })
+      })
+    },
     selectCard (state, {card, index, player}) {
       const players = {
         'player': state.hands[0].cards,
@@ -160,6 +179,15 @@ export default new Vuex.Store({
       commit('resetSelectedCards')
       commit('changeTurn')
     },
+    dealerPass ({commit, state}, {player, card}) {
+      commit('setCardToCommonCards', {player, card})
+      commit('resetSelectedCards')
+      commit('changeTurn')
+    },
+    dealerPlay ({commit}, cards) {
+      commit('dealerSelectedCards', cards)
+      return true
+    },
     result ({commit, state}) {
       const player = {
         cards: state.playerCardsWinned.length,
@@ -181,7 +209,7 @@ export default new Vuex.Store({
       for (const key in player) {
         if (player[key] > dealer[key]) {
           points.player++
-        } else {
+        } else if (player[key] < dealer[key]) {
           points.dealer++
         }
       }

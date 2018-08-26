@@ -22,7 +22,7 @@ import Gold from './Suits/Gold'
 import Wood from './Suits/Wood'
 import Heart from './Suits/Heart'
 
-import { getAllCombinations, getPlays, getPlaysSingleCard, hasGoldSeven } from '@/utils/game'
+import { getAllCombinations, getPlays, getPlaysSingleCard, getBestPlay } from '@/utils/game'
 
 export default {
   name: 'Card',
@@ -91,7 +91,7 @@ export default {
       }
         // const handPlays = getPlays(this.playerCards, getAllCombinations(this.commonCards))
         // console.log(getPlays(this.playerCards, getAllCombinations(this.commonCards)))
-        // console.log(hasGoldSeven(handPlays))
+        // console.log(getBestPlay(handPlays))
           // this.cardSelected = !this.cardSelected
           // if (this.$store.state.facedUpCards.length === 2) return console.log('ya hay dos')
           // if (this.card.facedDown === false) return

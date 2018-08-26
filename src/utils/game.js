@@ -234,29 +234,35 @@ export const getPlaysSingleCard = (card, combinations) => {
   return plays
 }
 
-export const hasGoldSeven = (handPlays) => {
-  for (let i = 0; i < handPlays.length; i++) {
-    const cardPlays = handPlays[i]
-    for (let j = 0; j < cardPlays.length; j++) {
-      const cards = cardPlays[j].cards
-      for (let k = 0; k < cards.length; k++) {
-        const card = cards[k]
-        if (isGoldSeven(card)) {
-          // console.log('break gold seven', i, j, k)
-          return `${i}${j}${k}`
+export const getBestPlay = (handPlays) => {
+  let bestPlay = []
+    for (let i = 0; i < handPlays.length; i++) {
+      const cardPlays = handPlays[i]
+      for (let j = 0; j < cardPlays.length; j++) {
+        const cards = cardPlays[j].cards
+        for (let k = 0; k < cards.length; k++) {
+          const card = cards[k]
+          bestPlay = handPlays[i][j].cards
+          if (isGoldSeven(card)) {
+            console.log('break gold seven', i, j, k)
+            // return `${i}${j}${k}`
+            bestPlay = handPlays[i][j].cards
+          }
+          if (isSeven(card)) {
+            console.log('break seven', i, j, k)
+            // return `${i}${j}${k}`
+            bestPlay = handPlays[i][j].cards
+          }
+          if (isGold(card)) {
+            console.log('break gold', i, j, k)
+            // return `${i}${j}${k}`
+            bestPlay = handPlays[i][j].cards
+          }
+          // console.log('no lucky', i, j, k)
         }
-        if (isSeven(card)) {
-          // console.log('break seven', i, j, k)
-          return `${i}${j}${k}`
-        }
-        if (isGold(card)) {
-          // console.log('break gold', i, j, k)
-          return `${i}${j}${k}`
-        }
-        // console.log('no lucky', i, j, k)
       }
-    }    
-  }
+    }
+  return bestPlay
 }
 
 export const isFifteen = (play) => {

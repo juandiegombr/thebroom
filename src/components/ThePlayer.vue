@@ -1,5 +1,6 @@
 <template>
   <div class="the-player">
+    <!-- <message-ok player="player"/> -->
     <transition-group name="deal" tag="div" class="the-player-hand">
       <Card v-for="(card, i) in $store.state.hands[0].cards" :key="i + 10" :index="i" :card="card"/>
     </transition-group>
@@ -8,12 +9,15 @@
 
 <script>
 import Card from './Card'
+import MessageOk from '@/components/messages/MessageOk'
+
 export default {
   name: 'ThePlayer',
   props: {
   },
   components: {
-    Card
+    Card,
+    MessageOk
   }
 }
 </script>
@@ -22,7 +26,7 @@ export default {
 .the-player {
   display: flex;
   position: absolute;
-  top: 60px;
+  bottom: 60px;
 }
 .the-player-hand {
   display: flex;

@@ -1,7 +1,7 @@
 <template>
   <transition name="balloon">
     <div
-        v-if="true"
+        v-if="show"
         class="hand-result"
     >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 84.41">
@@ -24,23 +24,37 @@ export default {
   components: {
   },
   props: {
-    result2: {
+    player: {
       type: String,
       required: false
     }
   },
   data () {
       return {
-          result: false
+          show: false
       }
+  },
+  computed: {
+    turn () {
+      return this.$store.state.turn
+    }
+  },
+  watch: {
+    turn (value) {
+      if (value === this.player)
+      this.show = true
+      setTimeout(() => {
+        this.show = false
+      }, 2000)
+    }
   },
   methods: {
       timer () {
-          this.result = !this.result
+          this.show = !this.show
       }
   },
   mounted () {
-      setInterval(this.timer, 2000)
+      // setInterval(this.timer, 2000)
   }
 }
 </script>
@@ -48,13 +62,14 @@ export default {
 <style scoped>
 .hand-result {
   position: absolute;
-  width: 26rem;
-  top: 2rem;
-  left: calc(50% - 13rem);
+  width: 14rem;
+  top: 15px;
+  left: calc(50% - 7rem);
   text-align: center;
+  z-index: 99;
 }
 .hand-result svg {
-  width: 26rem;
+  width: 14rem;
 }
 .balloon-enter-active {
   animation: balloon-in ease-in-out .6s;
