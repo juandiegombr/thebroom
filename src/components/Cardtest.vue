@@ -1,6 +1,6 @@
 <template>
-  <div class="cardtest" :class="{'cardtest-selected': cardSelected, 'face-down': cardSelected}">
-    <div class="cardtest-front" :class="{'face-down': cardSelected}" @click="clickOnCard">
+<div class="cardtest" :class="{'cardtest-selected': cardSelected, 'face-down': cardSelected}" :style="{top: `calc(${positions[position].top}% - 4.5rem)`, left: `calc(${positions[number].left}% - 3rem)`}">
+    <div class="cardtest-front" :class="{'face-down': cardSelected}" @click="moveCard">
       <div class="suit-wrapper">
         <component :is="card.suit"/>
       </div>
@@ -8,7 +8,7 @@
         {{card.value}}
       </span>
     </div>
-    <div class="cardtest-back" :class="{'face-down': cardSelected, 'matched': isMatched}" @click="clickOnCard">
+    <div class="cardtest-back" :class="{'face-down': cardSelected}" @click="clickOnCard">
       <div class="cardtest-back-design"></div>
       <div class="cardtest-back-corners-top"></div>
       <div class="cardtest-back-corners-bottom"></div>
@@ -34,13 +34,13 @@ export default {
     card: {
       type: Object,
       required: true
+    },
+    position: {
+      type: Number,
+      required: true
     }
   },
   computed: {
-    isMatched () {
-      const matchedCards = this.$store.state.matchedCards.map(card => card.index)
-      return matchedCards.includes(this.index)
-    },
     suitColor () {
       const colors = {
         heart: 'red',
@@ -61,6 +61,12 @@ export default {
     }
   },
   methods: {
+    moveCard () {
+      if (this.number === 5) {
+        this.number = 0
+      }
+      this.number++
+    },
     clickOnCard () {
       this.cardSelected = !this.cardSelected
     },
@@ -84,7 +90,16 @@ export default {
   },
   data () {
     return {
-      cardSelected: false
+      cardSelected: false,
+      positions: [
+        {top: 40, left: 50},
+        {top: 2, left: 50},
+        {top: 80, left: 50},
+        {top: 100, left: 100},
+        {top: 0, left: 100},
+        {top: 50, left: 50}
+      ],
+      number: 0
     }
   },
   components: {
@@ -102,20 +117,21 @@ export default {
 
 .cardtest {
   position: absolute;
+  cursor: pointer;
   height: 9rem;
   width: 6rem;
   margin: 5px;
-  top: 250px;
-  right: 250px;
+  // top: 250px;
+  // right: 250px;
   justify-self: center;
   align-self: center;
-  transition: all 2s;
+  transition: all 1s;
   // transition: all 2s cubic-bezier(0.85, 0.12, 0, 1.07) 0s;
 
   &.cardtest-selected {
     // transform: translateY(-20px) !important;
-    top: 0;
-    right: 0;
+    // top: 0;
+    // right: 0;
   }
   &-value {
     font-size: 80px;

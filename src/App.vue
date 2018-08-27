@@ -1,11 +1,13 @@
 <template>
   <div id="app">
     <TheGameArea/>
-    <ThePlayer/>
+    <!-- <ThePlayer/>
     <TheDealer/>
     <TheCommonCards/>
-    <ThePlayButton/>
-    <!-- <Cardtest v-if="card" :card="card" :index="0"/> -->
+    <ThePlayButton/> -->
+    <Cardtest v-if="card" :card="card" :index="0" :position="0"/>
+    <Cardtest v-if="card" :card="card" :index="0" :position="1"/>
+    <Cardtest v-if="card" :card="card" :index="0" :position="2"/>
   </div>
 </template>
 
