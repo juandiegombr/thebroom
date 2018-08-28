@@ -1,7 +1,7 @@
 export const prepareDeck = () => {
   const facedDownDeck = setFacedDown(createDeck())
   const shuffledDeck = shuffle(facedDownDeck)
-  const preparedDeck = setIndex(shuffledDeck)
+  const preparedDeck = setOptions(shuffledDeck)
   return preparedDeck
 }
 
@@ -37,13 +37,16 @@ export const setFacedDown = (deck) => {
   })
 }
 
-export const setIndex = (deck) => {
+export const setOptions = (deck) => {
   return deck.map((card, index) => {
     return {
       index,
       ...card,
       facedDown: false,
-      selected: false
+      selected: false,
+      position: 'deck',
+      positionIndex: null,
+      dealed: false
     }
   })
 }

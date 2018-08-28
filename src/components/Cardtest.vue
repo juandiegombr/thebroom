@@ -1,6 +1,6 @@
 <template>
-<div class="cardtest" :class="{'cardtest-selected': cardSelected, 'face-down': cardSelected}" :style="{top: `calc(${positions[position].top}% - 4.5rem)`, left: `calc(${positions[number].left}% - 3rem)`}">
-    <div class="cardtest-front" :class="{'face-down': cardSelected}" @click="moveCard">
+<div class="cardtest" :class="{'selected': card.selected}" :style="{top: `calc(${positions[card.position].top}% - 4.5rem)`, left: `calc(${positions[card.position].left}% - ${(card.position !== 'player' && card.position !== 'dealer' && card.position !== 'common' ? 0 : card.position === 'common' ? commonCardsInitialPosition : 10 ) - 7 * card.positionIndex}rem)`}">
+    <div class="cardtest-front" @click="moveCard">
       <div class="suit-wrapper">
         <component :is="card.suit"/>
       </div>
@@ -8,7 +8,7 @@
         {{card.value}}
       </span>
     </div>
-    <div class="cardtest-back" :class="{'face-down': cardSelected}" @click="clickOnCard">
+    <div class="cardtest-back">
       <div class="cardtest-back-design"></div>
       <div class="cardtest-back-corners-top"></div>
       <div class="cardtest-back-corners-bottom"></div>
@@ -58,31 +58,29 @@ export default {
     },
     dealerCards () {
       return this.$store.state.hands[1].cards
+    },
+    playersCards () {
+      return this.playerCards.length + this.dealerCards.length
+    },
+    commonCardsInitialPosition () {
+      return this.commonCards.length / 2 * 6 + (this.commonCards.length - 1) / 2
     }
   },
   methods: {
     moveCard () {
-      if (this.number === 5) {
-        this.number = 0
+      // this.$store.commit('changeCardPosition', {card: this.card, index: this.card.index, position: 'common'})
+      if (this.card.selected) {
+        this.$store.commit('deselectCard', this.card)
+      } else {
+        this.$store.commit('selectCard', this.card)
       }
-      this.number++
+
     },
     clickOnCard () {
       this.cardSelected = !this.cardSelected
     },
     clickOnCardTest () {
-      if (this.cardSelected) {
-        this.$store.commit('deselectCard', this.card)
-      } else {
-        this.$store.commit('selectCard', this.card)
-      }
       this.cardSelected = !this.cardSelected
-      // if (this.$store.state.facedUpCards.length === 2) return console.log('ya hay dos')
-      // if (this.card.facedDown === false) return
-      // this.$store.dispatch('setClickedCard', this.card)
-      // if (this.$store.state.facedUpCards.length === 2) {
-      //   this.$store.dispatch('checkIfCardsMatch')
-      // }
       const handPlays = getPlays(this.playerCards, getAllCombinations(this.commonCards))
       console.log(getPlays(this.playerCards, getAllCombinations(this.commonCards)))
       console.log(getBestPlay(handPlays))
@@ -91,7 +89,15 @@ export default {
   data () {
     return {
       cardSelected: false,
-      positions: [
+      positions: {
+        deck: {top: 0, left: 0},
+        common: {top: 40, left: 50},
+        dealer: {top: 2, left: 50},
+        dealerDeck: {top: 2, left: 80},
+        player: {top: 80, left: 50},
+        playerDeck: {top: 80, left: 80}
+      },
+      positionstest: [
         {top: 40, left: 50},
         {top: 2, left: 50},
         {top: 80, left: 50},
@@ -120,16 +126,13 @@ export default {
   cursor: pointer;
   height: 9rem;
   width: 6rem;
-  margin: 5px;
-  // top: 250px;
-  // right: 250px;
   justify-self: center;
   align-self: center;
   transition: all 1s;
   // transition: all 2s cubic-bezier(0.85, 0.12, 0, 1.07) 0s;
 
-  &.cardtest-selected {
-    // transform: translateY(-20px) !important;
+  &.selected {
+    transform: translateY(-20px) !important;
     // top: 0;
     // right: 0;
   }

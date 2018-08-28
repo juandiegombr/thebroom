@@ -47,6 +47,7 @@ export default {
       this.test1++
       const sumValues = (prev, current) => prev + current.value
       const playValue = this.selectedCards.reduce(sumValues, 0)
+      return this.$store.dispatch('correctPlay')
       if (playValue === 15) {
         console.log('Well play!')
         this.$store.dispatch('correctPlay')

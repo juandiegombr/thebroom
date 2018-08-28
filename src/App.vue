@@ -3,11 +3,12 @@
     <TheGameArea/>
     <!-- <ThePlayer/>
     <TheDealer/>
-    <TheCommonCards/>
-    <ThePlayButton/> -->
-    <Cardtest v-if="card" :card="card" :index="0" :position="0"/>
+    <TheCommonCards/> -->
+    <ThePlayButton/>
+    <Cardtest v-for="(card, index) in deck" :key="index" :card="card" :index="0" :position="0"/>
+    <!-- <Cardtest v-if="card" :card="card" :index="0" :position="0"/>
     <Cardtest v-if="card" :card="card" :index="0" :position="1"/>
-    <Cardtest v-if="card" :card="card" :index="0" :position="2"/>
+    <Cardtest v-if="card" :card="card" :index="0" :position="2"/> -->
   </div>
 </template>
 
@@ -26,8 +27,28 @@ export default {
     cards () {
       return this.$store.state.facedDownCards
     },
+    deck () {
+      return this.$store.state.broomDeck
+    },
     card () {
       return this.$store.state.broomDeck[0]
+    },
+    playerCards () {
+      return this.$store.state.hands[0].cards
+    },
+    dealerCards () {
+      return this.$store.state.hands[1].cards
+    },
+    playersCards () {
+      return this.playerCards.length + this.dealerCards.length
+    },
+  },
+  watch: {
+    playersCards (value) {
+      if (!value) {
+        console.log('empty cards')
+        this.$store.dispatch('startDeal')
+      }
     }
   },
   mounted () {
@@ -49,7 +70,10 @@ export default {
 
 <style lang="scss">
 body {
- margin: 0; 
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
 }
 #app {
   font-family: 'Avenir', Helvetica, Arial, sans-serif;
@@ -62,6 +86,9 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
 }
 #nav {
   padding: 30px;
