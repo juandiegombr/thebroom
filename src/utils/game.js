@@ -104,118 +104,6 @@ export const getAllCombinations = (commonCards) => {
   return combinations
 }
 
-
-const combinations = [2, 6, 8, 4, 6, 10, 12, 9, 11, 15, 17, 13, 15, 19, 21]
-const combinations2 = [
-  {
-    "quantity": 2,
-    "cards": [
-      {
-        "facedDown": true,
-        "index": 0,
-        "suit": "sword",
-        "value": 2
-      }
-    ]
-  },
-  {
-    "quantity": 6,
-    "cards": [
-      {
-        "facedDown": true,
-        "index": 0,
-        "suit": "sword",
-        "value": 6
-      }
-    ]
-  },
-  {
-    "quantity": 8,
-    "cards": [
-      {
-        "facedDown": true,
-        "index": 0,
-        "suit": "sword",
-        "value": 2
-      },
-      {
-        "facedDown": true,
-        "index": 0,
-        "suit": "sword",
-        "value": 6
-      }
-    ]
-  },
-  {
-    "quantity": 4,
-    "cards": [
-      {
-        "facedDown": true,
-        "index": 0,
-        "suit": "sword",
-        "value": 4
-      }
-    ]
-  },
-  {
-    "quantity": 6,
-    "cards": [
-      {
-        "facedDown": true,
-        "index": 0,
-        "suit": "sword",
-        "value": 2
-      },
-      {
-        "facedDown": true,
-        "index": 0,
-        "suit": "sword",
-        "value": 4
-      }
-    ]
-  },
-  {
-    "quantity": 10,
-    "cards": [
-      {
-        "facedDown": true,
-        "index": 0,
-        "suit": "sword",
-        "value": 6
-      },
-      {
-        "facedDown": true,
-        "index": 0,
-        "suit": "sword",
-        "value": 4
-      }
-    ]
-  },
-  {
-    "quantity": 12,
-    "cards": [
-      {
-        "facedDown": true,
-        "index": 0,
-        "suit": "sword",
-        "value": 2
-      },
-      {
-        "facedDown": true,
-        "index": 0,
-        "suit": "sword",
-        "value": 6
-      },
-      {
-        "facedDown": true,
-        "index": 0,
-        "suit": "sword",
-        "value": 4
-      }
-    ]
-  }
-]
-
 export const getPlays = (hand, combinations) => {
   let handPlays = []
   for (let i = 0; i < hand.length; i++) {
@@ -239,32 +127,35 @@ export const getPlaysSingleCard = (card, combinations) => {
 
 export const getBestPlay = (handPlays) => {
   let bestPlay = []
-    for (let i = 0; i < handPlays.length; i++) {
-      const cardPlays = handPlays[i]
-      for (let j = 0; j < cardPlays.length; j++) {
-        const cards = cardPlays[j].cards
-        for (let k = 0; k < cards.length; k++) {
-          const card = cards[k]
+  for (let i = 0; i < handPlays.length; i++) {
+    const cardPlays = handPlays[i]
+    for (let j = 0; j < cardPlays.length; j++) {
+      const cards = cardPlays[j].cards
+      for (let k = 0; k < cards.length; k++) {
+        const card = cards[k]
+        bestPlay = handPlays[i][j].cards
+        if (isGoldSeven(card)) {
+          console.log('break gold seven', i, j, k)
+          // return `${i}${j}${k}`
           bestPlay = handPlays[i][j].cards
-          if (isGoldSeven(card)) {
-            console.log('break gold seven', i, j, k)
-            // return `${i}${j}${k}`
-            bestPlay = handPlays[i][j].cards
-          }
-          if (isSeven(card)) {
-            console.log('break seven', i, j, k)
-            // return `${i}${j}${k}`
-            bestPlay = handPlays[i][j].cards
-          }
-          if (isGold(card)) {
-            console.log('break gold', i, j, k)
-            // return `${i}${j}${k}`
-            bestPlay = handPlays[i][j].cards
-          }
-          // console.log('no lucky', i, j, k)
+          return bestPlay
         }
+        if (isSeven(card)) {
+          console.log('break seven', i, j, k)
+          // return `${i}${j}${k}`
+          bestPlay = handPlays[i][j].cards
+          return bestPlay
+        }
+        if (isGold(card)) {
+          console.log('break gold', i, j, k)
+          // return `${i}${j}${k}`
+          bestPlay = handPlays[i][j].cards
+          return bestPlay
+        }
+        // console.log('no lucky', i, j, k)
       }
     }
+  }
   return bestPlay
 }
 

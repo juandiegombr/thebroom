@@ -6,16 +6,16 @@
 
 <script>
 import { mapState } from 'vuex'
+import { getAllCombinations, getPlays, getBestPlay } from '@/utils/game'
+
 export default {
   name: 'ThePlayButton',
   data () {
     return {
-      test1: 0
     }
   },
   computed: {
-    ...mapState({test: state => [...state.commonCards]}),
-    ...mapState(['deal']),
+    ...mapState(['turn', 'deal']),
     selectedCards () {
       return this.$store.state.selectedCards
     },
@@ -37,6 +37,14 @@ export default {
       if (value.length === 0) {
         console.log('escoba!!!')
       }
+    },
+    turn (newTurn) {
+      console.log(newTurn)
+      if (newTurn === 'dealer') {
+        setTimeout(() => {
+          this.dealerPlay()
+        }, 500);
+      }
     }
   },
   methods: {
@@ -44,10 +52,8 @@ export default {
       console.log('doubleclick')
     },
     play () {
-      this.test1++
       const sumValues = (prev, current) => prev + current.value
       const playValue = this.selectedCards.reduce(sumValues, 0)
-      return this.$store.dispatch('correctPlay')
       if (playValue === 15) {
         console.log('Well play!')
         this.$store.dispatch('correctPlay')
@@ -56,9 +62,6 @@ export default {
         console.log('Ha ha ha! You have to count better!')
       }
       if (this.$store.state.deal === 6) this.$store.dispatch('result')
-      if (this.playerCards.length === 0 && this.dealerCards.length === 0) {
-        this.$store.dispatch('startDeal')
-      }
     },
     pass () {
       const players = {
@@ -71,6 +74,25 @@ export default {
       }
       const selectedCard = players[this.turn].find(card => card.selected)
       this.$store.dispatch('pass', {player: index[this.turn], card: selectedCard})
+    },
+    dealerPlay () {
+      const combinations = getAllCombinations(this.commonCards)
+      const plays = getPlays(this.dealerCards, combinations)
+      const bestPlay = getBestPlay(plays)
+      if (bestPlay.length > 0) {
+        this.$store.dispatch('dealerPlay', bestPlay)
+          .then(() => {
+            setTimeout(() => {
+              this.$store.dispatch('correctPlay')
+            }, 500)
+          })
+      } else {
+        this.$store.commit('selectCard', this.dealerCards[0])
+          setTimeout(() => {
+            this.$store.dispatch('pass', {player: 1, card: this.dealerCards[0]})
+          }, 500)
+      }
+      if (this.$store.state.deal === 6) this.$store.dispatch('result')
     }
   }
 }

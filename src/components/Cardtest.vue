@@ -68,7 +68,6 @@ export default {
   },
   methods: {
     moveCard () {
-      // this.$store.commit('changeCardPosition', {card: this.card, index: this.card.index, position: 'common'})
       if (this.card.selected) {
         this.$store.commit('deselectCard', this.card)
       } else {
@@ -92,8 +91,8 @@ export default {
       positions: {
         deck: {top: 0, left: 0},
         common: {top: 40, left: 50},
-        dealer: {top: 2, left: 50},
-        dealerDeck: {top: 2, left: 80},
+        dealer: {top: 10, left: 50},
+        dealerDeck: {top: 10, left: 80},
         player: {top: 80, left: 50},
         playerDeck: {top: 80, left: 80}
       },

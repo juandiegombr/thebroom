@@ -45,6 +45,7 @@ export default {
   },
   watch: {
     playersCards (value) {
+      if (this.$store.state.deal === 6) return
       if (!value) {
         console.log('empty cards')
         this.$store.dispatch('startDeal')
