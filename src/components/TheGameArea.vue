@@ -1,20 +1,33 @@
 <template>
   <div class="game-area-background">
     <div class="game-area-background-decoration"></div>
+    <div class="score">
+      <div class="round">
+        <span>ROUND {{ round }}</span>
+      </div>
+      <div class="results">
+        <p>PLAYER: {{ results.player }}</p>
+        <p>DEALER: {{ results.dealer }}</p>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   name: 'TheGameArea',
   props: {
+  },
+  computed: {
+    ...mapState(['results', 'round'])
   },
   components: {
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
 .game-area-background {
   box-sizing: border-box;
@@ -42,6 +55,18 @@ export default {
       bottom: .2rem;
       border: .1rem solid rgba(255, 212, 20, .2);
 
+    }
+  }
+  .score {
+    position: fixed;
+    top: 6rem;
+    right: 3rem;
+    color: rgba(255, 212, 20, .2);
+    text-align: center;
+    .round {
+      border: 1px solid rgba(255, 212, 20, .3);
+      padding: 1rem;
+      border-radius: 3px;
     }
   }
 }

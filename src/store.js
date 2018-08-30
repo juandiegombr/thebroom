@@ -1,13 +1,13 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-import { prepareDeck, createDeck, setFacedDown, setIndex, areEquals } from '@/utils/game'
+import { prepareDeck } from '@/utils/game'
 
 Vue.use(Vuex)
 
 const initialState = {
   broomDeck: [],
-  hands: [{cards: []},{cards: []}],
+  hands: [{cards: []}, {cards: []}],
   commonCards: [],
   selectedCards: [],
   selectedOwnCard: false,
@@ -15,9 +15,10 @@ const initialState = {
   dealerCardsWinned: [],
   turn: 'player',
   deal: 0,
+  round: 1,
   results: {
-    player: {},
-    dealer: {}
+    player: 0,
+    dealer: 0
   }
 }
 
@@ -33,12 +34,16 @@ export default new Vuex.Store({
       const hands = ['player', 'dealer']
       let firstCardOfDeck = state.broomDeck.find(card => card.dealed === false)
       if (handIndex === 'commonCard') {
+        firstCardOfDeck.facedDown = false
         firstCardOfDeck.player = 'common'
         firstCardOfDeck.position = 'common'
         firstCardOfDeck.positionIndex = state.commonCards.length
         firstCardOfDeck.dealed = true
         state.commonCards.push(firstCardOfDeck)
         return
+      }
+      if (hands[handIndex] === 'player') {
+        firstCardOfDeck.facedDown = false
       }
       firstCardOfDeck.player = hands[handIndex]
       firstCardOfDeck.position = hands[handIndex]
@@ -57,6 +62,7 @@ export default new Vuex.Store({
       dealerCards.forEach((el, i) => {
         if (el.suit === dealerSelectedCard.suit && el.value === dealerSelectedCard.value) {
           dealerCards[i].selected = true
+          dealerCards[i].facedDown = false
         }
       })
       commonSelectedCard.forEach((selectCard, i) => {
@@ -72,6 +78,10 @@ export default new Vuex.Store({
       if (card.player !== 'common' && card.player !== state.turn) return
       if (state.broomDeck.find(deckCard => card.player !== 'common' && deckCard.selected && deckCard.player === card.player)) return
       const { index } = card
+      if (card.player === 'dealer') {
+        state.broomDeck[index].facedDown = false
+        console.log('dealer card selected')
+      }
       state.selectedCards.push(card)
       state.broomDeck[index].selected = true
     },
@@ -82,7 +92,6 @@ export default new Vuex.Store({
       state.selectedCards.some((selectedCard, i) => {
         if (selectedCard === card) {
           state.selectedCards.splice(i, 1)
-          return
         }
       })
     },
@@ -90,6 +99,7 @@ export default new Vuex.Store({
     removePlayedCard (state, card) {
       const { player, index } = card
       state.broomDeck[index].position = `${state.turn}Deck`
+      state.broomDeck[index].facedDown = true
       state.broomDeck[index].selected = false
       state.broomDeck[index].positionIndex = 0
       const players = {
@@ -100,16 +110,19 @@ export default new Vuex.Store({
       players[player].forEach((playerCard, i) => {
         if (playerCard === card) {
           players[player].splice(i, 1)
-          return
         }
       })
       players[player].filter(c => c.player === 'common').forEach((playerCard, i) => {
         players[player][i].positionIndex = i
       })
     },
-    
+
     resetSelectedCards (state) {
       state.selectedCards = []
+      state.broomDeck = state.broomDeck.map(c => {
+        c.selected = false
+        return c
+      })
     },
 
     changeTurn (state) {
@@ -124,6 +137,7 @@ export default new Vuex.Store({
       const newPlayerHand = state.hands[player].cards.filter(handCard => handCard !== card)
       state.broomDeck.forEach((deckCard, i) => {
         if (deckCard === card) {
+          state.broomDeck[i].facedDown = false
           state.broomDeck[i].position = 'common'
           state.broomDeck[i].positionIndex = state.commonCards.length
           state.broomDeck[i].player = 'common'
@@ -143,8 +157,9 @@ export default new Vuex.Store({
       state.deal++
     },
 
-    setResults (state, results) {
-      state.results = results
+    setResults (state, {player, dealer}) {
+      state.results.player = player
+      state.results.dealer = dealer
     },
 
     _changeCardPosition (state, {card, index, position}) {
@@ -153,7 +168,6 @@ export default new Vuex.Store({
       hand.forEach((handCard, index) => {
         if (card === handCard) {
           hand.splice(index, 1)
-          return
         }
       })
       state.broomDeck[index].position = position
@@ -193,14 +207,14 @@ export default new Vuex.Store({
       const currentHandIndex = turns.indexOf(state.turn)
       state.selectedCards.forEach((selectedCard, index) => {
         for (let i = 0; i < state.hands[currentHandIndex].cards.length; i++) {
-          const playerCard = state.hands[currentHandIndex].cards[i];
+          const playerCard = state.hands[currentHandIndex].cards[i]
           if (playerCard === selectedCard) {
             commit('removePlayedCard', playerCard)
             break
           }
         }
         for (let i = 0; i < state.commonCards.length; i++) {
-          const commonCard = state.commonCards[i];
+          const commonCard = state.commonCards[i]
           if (commonCard === selectedCard) {
             commit('removePlayedCard', commonCard)
           }
@@ -259,7 +273,8 @@ export default new Vuex.Store({
       } else {
         points.winner = 'dealer'
       }
-      commit('setResults', {player, dealer, points})
+      commit('setResults', {player: points.player, dealer: points.dealer})
+      console.log({player, dealer, points})
     }
   },
 

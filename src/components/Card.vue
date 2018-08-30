@@ -1,6 +1,6 @@
 <template>
-  <div class="card" :class="{'card-selected': card.selected}" @click.stop="clickOnCard">
-    <div class="card-front" @dblclick="double">
+<div class="card" :class="{'selected': card.selected}" :style="{top: `calc(${positions[card.position].top}% - 4.5rem)`, left: `calc(${positions[card.position].left}% - ${(card.position !== 'player' && card.position !== 'dealer' && card.position !== 'common' ? 0 : card.position === 'common' ? commonCardsInitialPosition : 10 ) - 7 * card.positionIndex}rem)`}">
+    <div class="card-front" :class="{'face-down': card.facedDown, 'selected': card.selected}" @click="moveCard">
       <div class="suit-wrapper">
         <component :is="card.suit"/>
       </div>
@@ -8,7 +8,7 @@
         {{card.value}}
       </span>
     </div>
-    <div class="card-back" @click="clickOnCard">
+    <div class="card-back" :class="{'face-down': card.facedDown}">
       <div class="card-back-design"></div>
       <div class="card-back-corners-top"></div>
       <div class="card-back-corners-bottom"></div>
@@ -22,7 +22,7 @@ import Gold from './Suits/Gold'
 import Wood from './Suits/Wood'
 import Heart from './Suits/Heart'
 
-import { getAllCombinations, getPlays, getPlaysSingleCard, getBestPlay } from '@/utils/game'
+import { getAllCombinations, getPlays, getBestPlay } from '@/utils/game'
 
 export default {
   name: 'Card',
@@ -34,6 +34,10 @@ export default {
     card: {
       type: Object,
       required: true
+    },
+    position: {
+      type: Number,
+      required: true
     }
   },
   computed: {
@@ -44,7 +48,7 @@ export default {
         gold: 'yellow',
         wood: 'green'
       }
-    return colors[this.card.suit]
+      return colors[this.card.suit]
     },
     commonCards () {
       return this.$store.state.commonCards
@@ -55,63 +59,51 @@ export default {
     dealerCards () {
       return this.$store.state.hands[1].cards
     },
-    isMyTurn () {
-      const { turn } = this.$store.state
-      return turn === this.card.player || 'common' === this.card.player
+    playersCards () {
+      return this.playerCards.length + this.dealerCards.length
+    },
+    commonCardsInitialPosition () {
+      return this.commonCards.length / 2 * 6 + (this.commonCards.length - 1) / 2
     }
   },
-  methods: { 
-    double () {
-      // clearTimeout(this.timer)
-      // console.log('doubleclick')
-      // this.prevent = true
-      // return
+  methods: {
+    moveCard () {
+      if (this.card.selected) {
+        this.$store.commit('deselectCard', this.card)
+      } else {
+        this.$store.commit('selectCard', this.card)
+      }
     },
     clickOnCard () {
-      // this.timer = setTimeout(() => {
-      //   if (!this.prevent) {
-      //     console.log('single click')
-      //   }
-      //   this.prevent = false;
-      // }, 300);
-      const players = {
-        'player': this.playerCards,
-        'dealer': this.dealerCards,
-        'common': this.commonCards
-      }
-      if (!this.isMyTurn) return
-      if(this.isPlayerOrDealerCard() && this.hasAlreadySelected(players[this.card.player])) {
-        this.$store.commit('deselectCard', {card: this.card, index: this.index, player: this.card.player})
-        return
-      }
-      if (this.card.selected) {
-        this.$store.commit('deselectCard', {card: this.card, index: this.index, player: this.card.player})
-      } else {
-        this.$store.commit('selectCard', {card: this.card, index: this.index, player: this.card.player})
-      }
-        // const handPlays = getPlays(this.playerCards, getAllCombinations(this.commonCards))
-        // console.log(getPlays(this.playerCards, getAllCombinations(this.commonCards)))
-        // console.log(getBestPlay(handPlays))
-          // this.cardSelected = !this.cardSelected
-          // if (this.$store.state.facedUpCards.length === 2) return console.log('ya hay dos')
-          // if (this.card.facedDown === false) return
-          // this.$store.dispatch('setClickedCard', this.card)
-          // if (this.$store.state.facedUpCards.length === 2) {
-          //   this.$store.dispatch('checkIfCardsMatch')
-          // }
+      this.cardSelected = !this.cardSelected
     },
-    isPlayerOrDealerCard () {
-      return this.playerCards.includes(this.card) || this.dealerCards.includes(this.card)
-    },
-    hasAlreadySelected (cards) {
-      return cards.some(card => card.selected)
-    },
+    clickOnCardTest () {
+      this.cardSelected = !this.cardSelected
+      const handPlays = getPlays(this.playerCards, getAllCombinations(this.commonCards))
+      console.log(getPlays(this.playerCards, getAllCombinations(this.commonCards)))
+      console.log(getBestPlay(handPlays))
+    }
   },
   data () {
     return {
       cardSelected: false,
-      timer: null,
-      prevent: false
+      positions: {
+        deck: {top: 50, left: 5},
+        common: {top: 50, left: 50},
+        dealer: {top: 20, left: 50},
+        dealerDeck: {top: 20, left: 20},
+        player: {top: 80, left: 50},
+        playerDeck: {top: 80, left: 80}
+      },
+      positionstest: [
+        {top: 40, left: 50},
+        {top: 2, left: 50},
+        {top: 80, left: 50},
+        {top: 100, left: 100},
+        {top: 0, left: 100},
+        {top: 50, left: 50}
+      ],
+      number: 0
     }
   },
   components: {
@@ -127,23 +119,26 @@ export default {
 <style lang="scss">
 @import '@/assets/css/_variables.scss';
 
-.card-selected {
-  transform: translateY(-20px) !important;
-}
 .card {
-  position: relative;
+  position: absolute;
   cursor: pointer;
   height: 9rem;
   width: 6rem;
-  margin: 5px;
   justify-self: center;
   align-self: center;
-  transition: all 0.1s;
-  background-color: white;
+  transition: all .5s;
   border-radius: 10px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 2px 2px 20px -5px rgba(0, 0, 0, 0.25);
+  // transition: all 2s cubic-bezier(0.85, 0.12, 0, 1.07) 0s;
 
+  .selected {
+    // transform: translateY(-20px) !important;
+    transform: scale(1.1) !important;
+    box-shadow: 0 0 8px 6px rgba(255, 255, 255, 0.23), 0 0 8px 3px rgba(255, 255, 255, 0.23), 0 0 4px 3px rgba(255, 255, 255, 0.23);
+    // animation: pulse-shadow 1s infinite alternate-reverse;
+    // z-index: 1;
+    // top: 0;
+    // right: 0;
+  }
   &-value {
     font-size: 80px;
   }
@@ -157,8 +152,13 @@ export default {
   height: 100%;
   width: 100%;
   padding: 10%;
+  background-color: white;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 2px 2px 20px -5px rgba(0, 0, 0, 0.25);
+  backface-visibility: hidden;
   transform: rotateY(0deg);
-  transition: all .3s;
+  transition: all 1s;
   &.face-down {
     transform: rotateY(180deg);
     backface-visibility: hidden;
@@ -186,7 +186,7 @@ export default {
   background-color: white;
   border-radius: 10px;
   border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 2px 2px 20px -5px rgba(0, 0, 0, 0.25);
+  // box-shadow: 2px 2px 20px -5px rgba(0, 0, 0, 0.25);
   transform: rotateY(180deg);
   backface-visibility: hidden;
   transition: all 1s;
@@ -239,6 +239,21 @@ export default {
     border-right: 5px solid red;
     border-left: 5px solid rgb(8, 177, 76);
   }
+  .pulse-shadow {
+    -webkit-animation:pulse-shadow 2s infinite!important;
+    animation:pulse-shadow 2s infinite!important;
+    z-index: 1;
+  }
 
+}
+@keyframes pulse-shadow{
+    0%{
+        box-shadow: 0 0 8px 6px rgba(255, 255, 255, 0.0), 0 0 8px 3px rgba(255, 255, 255, 0.0), 0 0 4px 3px rgba(255, 255, 255, 0.0);
+        /* border: 1px solid white; */
+    }
+    100%{
+        box-shadow: 0 0 8px 6px rgba(255, 255, 255, 0.23), 0 0 8px 3px rgba(255, 255, 255, 0.23), 0 0 4px 3px rgba(255, 255, 255, 0.23);
+        /* border: 1px solid white; */
+    }
 }
 </style>

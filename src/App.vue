@@ -1,14 +1,11 @@
 <template>
   <div id="app">
     <TheGameArea/>
-    <!-- <ThePlayer/>
-    <TheDealer/>
-    <TheCommonCards/> -->
+    <Menu/>
     <ThePlayButton/>
-    <Cardtest v-for="(card, index) in deck" :key="index" :card="card" :index="0" :position="0"/>
-    <!-- <Cardtest v-if="card" :card="card" :index="0" :position="0"/>
-    <Cardtest v-if="card" :card="card" :index="0" :position="1"/>
-    <Cardtest v-if="card" :card="card" :index="0" :position="2"/> -->
+    <Card v-for="(card, index) in deck" :key="index" :card="card" :index="0" :position="0"/>
+    <CardPositionMark v-for="index in [0,1,2]" :key="index + 999" :positionIndex="index" position="dealer"/>
+    <CardPositionMark v-for="index in [0,1,2]" :key="index + 99 " :positionIndex="index" position="player"/>
   </div>
 </template>
 
@@ -19,7 +16,8 @@ import TheDealer from '@/components/TheDealer'
 import TheCommonCards from '@/components/TheCommonCards'
 import ThePlayButton from '@/components/ThePlayButton'
 import Card from '@/components/Card'
-import Cardtest from '@/components/Cardtest'
+import CardPositionMark from '@/components/CardPositionMark'
+import Menu from '@/components/Menu'
 import MessageOk from '@/components/messages/MessageOk'
 export default {
   name: 'app',
@@ -41,7 +39,7 @@ export default {
     },
     playersCards () {
       return this.playerCards.length + this.dealerCards.length
-    },
+    }
   },
   watch: {
     playersCards (value) {
@@ -56,8 +54,9 @@ export default {
     this.$store.dispatch('startBroomGame')
   },
   components: {
-    Cardtest,
+    Menu,
     Card,
+    CardPositionMark,
     TheGameArea,
     ThePlayer,
     TheDealer,
@@ -68,16 +67,22 @@ export default {
 }
 </script>
 
-
 <style lang="scss">
 body {
   margin: 0;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+  // font-family: 'Avenir', Helvetica, Arial, sans-serif;
+}
+button {
+  font-family: 'Montserrat', 'sans-serif';
+  &:focus {
+    outline: none
+  }
 }
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+  font-family: 'Montserrat', 'sans-serif';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;

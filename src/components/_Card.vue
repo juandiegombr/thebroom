@@ -1,6 +1,6 @@
 <template>
-<div class="cardtest" :class="{'selected': card.selected}" :style="{top: `calc(${positions[card.position].top}% - 4.5rem)`, left: `calc(${positions[card.position].left}% - ${(card.position !== 'player' && card.position !== 'dealer' && card.position !== 'common' ? 0 : card.position === 'common' ? commonCardsInitialPosition : 10 ) - 7 * card.positionIndex}rem)`}">
-    <div class="cardtest-front" @click="moveCard">
+  <div class="card" :class="{'card-selected': card.selected}" @click.stop="clickOnCard">
+    <div class="card-front" @dblclick="double">
       <div class="suit-wrapper">
         <component :is="card.suit"/>
       </div>
@@ -8,10 +8,10 @@
         {{card.value}}
       </span>
     </div>
-    <div class="cardtest-back">
-      <div class="cardtest-back-design"></div>
-      <div class="cardtest-back-corners-top"></div>
-      <div class="cardtest-back-corners-bottom"></div>
+    <div class="card-back" @click="clickOnCard">
+      <div class="card-back-design"></div>
+      <div class="card-back-corners-top"></div>
+      <div class="card-back-corners-bottom"></div>
     </div>
   </div>
 </template>
@@ -25,7 +25,7 @@ import Heart from './Suits/Heart'
 import { getAllCombinations, getPlays, getPlaysSingleCard, getBestPlay } from '@/utils/game'
 
 export default {
-  name: 'Cardtest',
+  name: 'Card',
   props: {
     index: {
       type: Number,
@@ -33,10 +33,6 @@ export default {
     },
     card: {
       type: Object,
-      required: true
-    },
-    position: {
-      type: Number,
       required: true
     }
   },
@@ -59,52 +55,63 @@ export default {
     dealerCards () {
       return this.$store.state.hands[1].cards
     },
-    playersCards () {
-      return this.playerCards.length + this.dealerCards.length
-    },
-    commonCardsInitialPosition () {
-      return this.commonCards.length / 2 * 6 + (this.commonCards.length - 1) / 2
+    isMyTurn () {
+      const { turn } = this.$store.state
+      return turn === this.card.player || 'common' === this.card.player
     }
   },
-  methods: {
-    moveCard () {
-      if (this.card.selected) {
-        this.$store.commit('deselectCard', this.card)
-      } else {
-        this.$store.commit('selectCard', this.card)
-      }
-
+  methods: { 
+    double () {
+      // clearTimeout(this.timer)
+      // console.log('doubleclick')
+      // this.prevent = true
+      // return
     },
     clickOnCard () {
-      this.cardSelected = !this.cardSelected
+      // this.timer = setTimeout(() => {
+      //   if (!this.prevent) {
+      //     console.log('single click')
+      //   }
+      //   this.prevent = false;
+      // }, 300);
+      const players = {
+        'player': this.playerCards,
+        'dealer': this.dealerCards,
+        'common': this.commonCards
+      }
+      if (!this.isMyTurn) return
+      if(this.isPlayerOrDealerCard() && this.hasAlreadySelected(players[this.card.player])) {
+        this.$store.commit('deselectCard', {card: this.card, index: this.index, player: this.card.player})
+        return
+      }
+      if (this.card.selected) {
+        this.$store.commit('deselectCard', {card: this.card, index: this.index, player: this.card.player})
+      } else {
+        this.$store.commit('selectCard', {card: this.card, index: this.index, player: this.card.player})
+      }
+        // const handPlays = getPlays(this.playerCards, getAllCombinations(this.commonCards))
+        // console.log(getPlays(this.playerCards, getAllCombinations(this.commonCards)))
+        // console.log(getBestPlay(handPlays))
+          // this.cardSelected = !this.cardSelected
+          // if (this.$store.state.facedUpCards.length === 2) return console.log('ya hay dos')
+          // if (this.card.facedDown === false) return
+          // this.$store.dispatch('setClickedCard', this.card)
+          // if (this.$store.state.facedUpCards.length === 2) {
+          //   this.$store.dispatch('checkIfCardsMatch')
+          // }
     },
-    clickOnCardTest () {
-      this.cardSelected = !this.cardSelected
-      const handPlays = getPlays(this.playerCards, getAllCombinations(this.commonCards))
-      console.log(getPlays(this.playerCards, getAllCombinations(this.commonCards)))
-      console.log(getBestPlay(handPlays))
-    }
+    isPlayerOrDealerCard () {
+      return this.playerCards.includes(this.card) || this.dealerCards.includes(this.card)
+    },
+    hasAlreadySelected (cards) {
+      return cards.some(card => card.selected)
+    },
   },
   data () {
     return {
       cardSelected: false,
-      positions: {
-        deck: {top: 0, left: 0},
-        common: {top: 40, left: 50},
-        dealer: {top: 10, left: 50},
-        dealerDeck: {top: 10, left: 80},
-        player: {top: 80, left: 50},
-        playerDeck: {top: 80, left: 80}
-      },
-      positionstest: [
-        {top: 40, left: 50},
-        {top: 2, left: 50},
-        {top: 80, left: 50},
-        {top: 100, left: 100},
-        {top: 0, left: 100},
-        {top: 50, left: 50}
-      ],
-      number: 0
+      timer: null,
+      prevent: false
     }
   },
   components: {
@@ -120,26 +127,28 @@ export default {
 <style lang="scss">
 @import '@/assets/css/_variables.scss';
 
-.cardtest {
-  position: absolute;
+.card-selected {
+  transform: translateY(-20px) !important;
+}
+.card {
+  position: relative;
   cursor: pointer;
   height: 9rem;
   width: 6rem;
+  margin: 5px;
   justify-self: center;
   align-self: center;
-  transition: all 1s;
-  // transition: all 2s cubic-bezier(0.85, 0.12, 0, 1.07) 0s;
+  transition: all 0.1s;
+  background-color: white;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 2px 2px 20px -5px rgba(0, 0, 0, 0.25);
 
-  &.selected {
-    transform: translateY(-20px) !important;
-    // top: 0;
-    // right: 0;
-  }
   &-value {
     font-size: 80px;
   }
 }
-.cardtest-front {
+.card-front {
   position: absolute;
   box-sizing: border-box;
   display: flex;
@@ -148,13 +157,8 @@ export default {
   height: 100%;
   width: 100%;
   padding: 10%;
-  background-color: white;
-  border-radius: 10px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: 2px 2px 20px -5px rgba(0, 0, 0, 0.25);
-  backface-visibility: hidden;
   transform: rotateY(0deg);
-  transition: all 2s;
+  transition: all .3s;
   &.face-down {
     transform: rotateY(180deg);
     backface-visibility: hidden;
@@ -173,7 +177,7 @@ export default {
     height: 100%;
   }
 }
-.cardtest-back {
+.card-back {
   position: absolute;
   box-sizing: border-box;
   height: 100%;
@@ -185,7 +189,7 @@ export default {
   box-shadow: 2px 2px 20px -5px rgba(0, 0, 0, 0.25);
   transform: rotateY(180deg);
   backface-visibility: hidden;
-  transition: all 2s;
+  transition: all 1s;
   &.face-down {
     transform: rotateY(0deg);
     z-index: 9;

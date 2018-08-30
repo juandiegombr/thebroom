@@ -1,7 +1,14 @@
 <template>
-  <button class="the-play-button" @click="play" @dblclick="double">
-    READY!
-  </button>
+  <div class="the-buttons" :style="{bottom: `calc(20% - 4.4rem)`, right: `calc(50% + 13rem)`}">
+    <button class="the-play-button" @click="play" @dblclick="double">
+      PLAY
+      <i class="far fa-thumbs-up button-icon"></i>
+    </button>
+    <button class="the-play-button" @click="play" @dblclick="double">
+      PASS
+      <i class="far fa-dizzy button-icon"></i>
+    </button>
+  </div>
 </template>
 
 <script>
@@ -12,6 +19,9 @@ export default {
   name: 'ThePlayButton',
   data () {
     return {
+      positions: {
+        player: {top: 20, left: 50},
+      },
     }
   },
   computed: {
@@ -43,7 +53,7 @@ export default {
       if (newTurn === 'dealer') {
         setTimeout(() => {
           this.dealerPlay()
-        }, 500);
+        }, 500)
       }
     }
   },
@@ -84,13 +94,13 @@ export default {
           .then(() => {
             setTimeout(() => {
               this.$store.dispatch('correctPlay')
-            }, 500)
+            }, 2000)
           })
       } else {
         this.$store.commit('selectCard', this.dealerCards[0])
-          setTimeout(() => {
-            this.$store.dispatch('pass', {player: 1, card: this.dealerCards[0]})
-          }, 500)
+        setTimeout(() => {
+          this.$store.dispatch('pass', {player: 1, card: this.dealerCards[0]})
+        }, 2000)
       }
       if (this.$store.state.deal === 6) this.$store.dispatch('result')
     }
@@ -99,19 +109,76 @@ export default {
 </script>
 
 <style lang="scss">
-.the-play-button {
+.the-buttons {
   position: absolute;
-  left: 20px;
-  bottom: 20px;
-  padding: 30px;
-  background-color: transparent;
-  border: 2px solid white;
+  // left: 3rem;
+  // bottom: 3rem;
+  display: flex;
+  flex-direction: column;
+}
+.the-play-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15px;
+  padding: 15px;
+  margin-top: 1rem;
+  background-color: #eee;
+  border: none;
   font-weight: 700;
-  font-size: 25px;
-  color: white;
+  font-size: 17px;
+  color: #251f1f;
+  box-sizing: border-box;
+  box-shadow: 0 3px 0 0 rgba(0,0,0,.25);
+  transition: all .5s;
   &:hover {
     background-color: white;
-    color: black
+    transform: translateY(-2px);
+    box-shadow: 0 5px 0 0 rgba(0,0,0,.25);
+    .button-icon {
+      // transform: rotate(90deg);
+      animation: move-icon 1s forwards;
+    }
+  }
+  &:active {
+    transform: translateY(3px);
+    box-shadow: 0 0 0 0 rgba(0,0,0,.25);
+    transition: all .1s;
+  }
+  .button-icon {
+    font-size: 1.4rem;
+    margin-left: .5rem;
+    transition: all .5s;
+    // animation: move-icon .5 infinite;
+  }
+}
+
+@keyframes pulse-shadow{
+    0%{
+        box-shadow:0 0 0 0 rgb(116, 171, 235);
+    }
+    70%{
+        box-shadow:0 0 5px 10px rgba(255,255,255,0);
+    }
+    100%{
+        box-shadow:0 0 0 0 rgba(255,255,255,0);
+    }
+}
+@keyframes move-icon {
+  0% {
+    transform: rotate(0deg) translateX(0px);
+  }
+  10% {
+    transform: rotate(10deg) translateX(0px);
+  }
+  50% {
+    transform: rotate(10deg) translateX(5px);
+  }
+  100% {
+    transform: rotate(10deg) translateX(0px);
+  }
+  100% {
+    transform: rotate(10deg) translateX(0px);
   }
 }
 </style>

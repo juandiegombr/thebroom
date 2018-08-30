@@ -42,7 +42,7 @@ export const setOptions = (deck) => {
     return {
       index,
       ...card,
-      facedDown: false,
+      facedDown: true,
       selected: false,
       position: 'deck',
       positionIndex: null,
@@ -60,28 +60,6 @@ export const areEquals = (cards) => {
   return false
 }
 
-const hand = [7, 3, 10]
-const commonCards = [2, 6, 4, 9]
-
-const card1 = {
-  facedDown: true,
-  index: 0,
-  suit: "sword",
-  value: 2
-}
-const card2 = {
-  facedDown: true,
-  index: 0,
-  suit: "sword",
-  value: 6
-}
-const card3 = {
-  facedDown: true,
-  index: 0,
-  suit: "sword",
-  value: 4
-}
-
 export const getAllCombinations = (commonCards) => {
   let combinations = []
   let temp = {
@@ -89,9 +67,9 @@ export const getAllCombinations = (commonCards) => {
     cards: []
   }
   const totalCombinations = Math.pow(2, commonCards.length)
-  for ( let i = 0; i < totalCombinations; i++) {
-    temp = { quantity: 0, cards: []}
-    for ( let j = 0; j < commonCards.length; j++) {
+  for (let i = 0; i < totalCombinations; i++) {
+    temp = {quantity: 0, cards: []}
+    for (let j = 0; j < commonCards.length; j++) {
       if ((i & Math.pow(2, j))) {
         temp.quantity += commonCards[j].value
         temp.cards.push(commonCards[j])
