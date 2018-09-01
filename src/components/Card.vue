@@ -23,7 +23,7 @@
 // import Heart from './Suits/Heart'
 
 import { getAllCombinations, getPlays, getBestPlay } from '@/utils/game'
-import { mapState } from 'vuex';
+import { mapState } from 'vuex'
 
 export default {
   name: 'Card',
@@ -89,12 +89,25 @@ export default {
         playerDeck: {top: 80, left: 80}
       },
       positionstest: [
-        {top: 40, left: 50},
-        {top: 2, left: 50},
-        {top: 80, left: 50},
-        {top: 100, left: 100},
-        {top: 0, left: 100},
-        {top: 50, left: 50}
+        {
+          top: 40,
+          left: 50
+        },
+        {
+          top: 2, left: 50
+        },
+        {
+          top: 80, left: 50
+        },
+        {
+          top: 100, left: 100
+        },
+        {
+          top: 0, left: 100
+        },
+        {
+          top: 50, left: 50
+        }
       ],
       number: 0
     }

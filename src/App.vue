@@ -16,7 +16,7 @@ import Card from '@/components/Card'
 import CardPositionMark from '@/components/CardPositionMark'
 import Menu from '@/components/Menu'
 import MessageOk from '@/components/messages/MessageOk'
-import { mapState } from 'vuex';
+import { mapState } from 'vuex'
 export default {
   name: 'app',
   computed: {
@@ -33,12 +33,12 @@ export default {
       console.log(value)
     },
     playersCards (value) {
-      if (!value && !this.test && this.status !== 'finished' ) {
+      if (!value && !this.test && this.status !== 'finished') {
         this.$store.dispatch('startDeal')
       }
     },
     restart (value) {
-      console.log(vale, this.playersCards)
+      console.log(value, this.playersCards)
     }
   },
   mounted () {

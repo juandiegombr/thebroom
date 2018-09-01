@@ -32,8 +32,8 @@ export default {
   data () {
     return {
       positions: {
-        player: {top: 20, left: 50},
-      },
+        player: {top: 20, left: 50}
+      }
     }
   },
   computed: {
