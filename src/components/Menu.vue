@@ -12,7 +12,7 @@ export default {
 <style lang="scss">
 .help-icon {
     position: fixed;
-    top: 3rem;
+    bottom: 3rem;
     right: 3rem;
     font-size: 2rem;
     color: rgba(255, 212, 20, 0.2);

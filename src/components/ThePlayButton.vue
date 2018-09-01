@@ -1,13 +1,25 @@
 <template>
   <div class="the-buttons" :style="{bottom: `calc(20% - 4.4rem)`, right: `calc(50% + 13rem)`}">
-    <button class="the-play-button" @click="play" @dblclick="double">
-      PLAY
-      <i class="far fa-thumbs-up button-icon"></i>
-    </button>
-    <button class="the-play-button" @click="play" @dblclick="double">
-      PASS
-      <i class="far fa-dizzy button-icon"></i>
-    </button>
+    <div class="buttons-group">
+      <button class="the-play-button" @click="newRound">
+        DEAL
+        <i class="far fa-share-square button-icon"></i>
+      </button>
+      <button class="the-play-button" @click="resetGame">
+        RESET
+        <i class="far fa-star button-icon"></i>
+      </button>
+    </div>
+    <div class="buttons-group">
+      <button class="the-play-button" @click="play" @dblclick="double">
+        PLAY
+        <i class="far fa-thumbs-up button-icon"></i>
+      </button>
+      <button class="the-play-button" @click="play">
+        PASS
+        <i class="far fa-dizzy button-icon"></i>
+      </button>
+    </div>
   </div>
 </template>
 
@@ -25,27 +37,16 @@ export default {
     }
   },
   computed: {
-    ...mapState(['turn', 'deal']),
-    selectedCards () {
-      return this.$store.state.selectedCards
-    },
-    playerCards () {
-      return this.$store.state.hands[0].cards
-    },
-    dealerCards () {
-      return this.$store.state.hands[1].cards
-    },
-    commonCards () {
-      return [...this.$store.state.commonCards]
-    },
-    turn () {
-      return this.$store.state.turn
+    ...mapState(['status', 'turn', 'deal', 'restart', 'playerCards', 'dealerCards', 'selectedCards', 'commonCards']),
+    areCardsOnPlayers () {
+      return this.playerCards.length + this.dealerCards.length
     }
   },
   watch: {
     commonCards (value) {
       if (value.length === 0) {
         console.log('escoba!!!')
+        console.log(this.restart)
       }
     },
     turn (newTurn) {
@@ -55,7 +56,11 @@ export default {
           this.dealerPlay()
         }, 500)
       }
+    },
+    status (value) {
+      if (value === 'finished') this.$store.dispatch('showResults')
     }
+
   },
   methods: {
     double () {
@@ -65,30 +70,21 @@ export default {
       const sumValues = (prev, current) => prev + current.value
       const playValue = this.selectedCards.reduce(sumValues, 0)
       if (playValue === 15) {
-        console.log('Well play!')
         this.$store.dispatch('correctPlay')
       } else {
         this.pass()
-        console.log('Ha ha ha! You have to count better!')
       }
-      if (this.$store.state.deal === 6) this.$store.dispatch('result')
     },
     pass () {
-      const players = {
-        'player': this.playerCards,
-        'dealer': this.dealerCards
-      }
-      const index = {
-        'player': 0,
-        'dealer': 1
-      }
-      const selectedCard = players[this.turn].find(card => card.selected)
-      this.$store.dispatch('pass', {player: index[this.turn], card: selectedCard})
+      const selectedCard = this.playerCards.find(card => card.selected)
+      this.$store.dispatch('pass', {player: 'player', card: selectedCard})
     },
     dealerPlay () {
       const combinations = getAllCombinations(this.commonCards)
       const plays = getPlays(this.dealerCards, combinations)
       const bestPlay = getBestPlay(plays)
+      console.log('plays', plays)
+      console.log('bestPlay', bestPlay)
       if (bestPlay.length > 0) {
         this.$store.dispatch('dealerPlay', bestPlay)
           .then(() => {
@@ -99,10 +95,15 @@ export default {
       } else {
         this.$store.commit('selectCard', this.dealerCards[0])
         setTimeout(() => {
-          this.$store.dispatch('pass', {player: 1, card: this.dealerCards[0]})
+          this.$store.dispatch('pass', {player: 'dealer', card: this.dealerCards[0]})
         }, 2000)
       }
-      if (this.$store.state.deal === 6) this.$store.dispatch('result')
+    },
+    resetGame () {
+      this.$store.dispatch('resetGame')
+    },
+    newRound () {
+      this.$store.dispatch('newRound')
     }
   }
 }
@@ -111,10 +112,11 @@ export default {
 <style lang="scss">
 .the-buttons {
   position: absolute;
-  // left: 3rem;
-  // bottom: 3rem;
   display: flex;
-  flex-direction: column;
+  .buttons-group {
+    display: flex;
+    flex-direction: column;
+  }
 }
 .the-play-button {
   display: flex;
@@ -123,6 +125,7 @@ export default {
   border-radius: 15px;
   padding: 15px;
   margin-top: 1rem;
+  margin-left: 1rem;
   background-color: #eee;
   border: none;
   font-weight: 700;

@@ -2,7 +2,7 @@
 <div class="card" :class="{'selected': card.selected}" :style="{top: `calc(${positions[card.position].top}% - 4.5rem)`, left: `calc(${positions[card.position].left}% - ${(card.position !== 'player' && card.position !== 'dealer' && card.position !== 'common' ? 0 : card.position === 'common' ? commonCardsInitialPosition : 10 ) - 7 * card.positionIndex}rem)`}">
     <div class="card-front" :class="{'face-down': card.facedDown, 'selected': card.selected}" @click="moveCard">
       <div class="suit-wrapper">
-        <component :is="card.suit"/>
+        <!-- <component :is="card.suit"/> -->
       </div>
       <span :class="`card-value ${suitColor}-color`">
         {{card.value}}
@@ -17,12 +17,13 @@
 </template>
 
 <script>
-import Sword from './Suits/Sword'
-import Gold from './Suits/Gold'
-import Wood from './Suits/Wood'
-import Heart from './Suits/Heart'
+// import Sword from './Suits/Sword'
+// import Gold from './Suits/Gold'
+// import Wood from './Suits/Wood'
+// import Heart from './Suits/Heart'
 
 import { getAllCombinations, getPlays, getBestPlay } from '@/utils/game'
+import { mapState } from 'vuex';
 
 export default {
   name: 'Card',
@@ -41,6 +42,7 @@ export default {
     }
   },
   computed: {
+    ...mapState(['playerCards', 'dealerCards', 'commonCards']),
     suitColor () {
       const colors = {
         heart: 'red',
@@ -49,15 +51,6 @@ export default {
         wood: 'green'
       }
       return colors[this.card.suit]
-    },
-    commonCards () {
-      return this.$store.state.commonCards
-    },
-    playerCards () {
-      return this.$store.state.hands[0].cards
-    },
-    dealerCards () {
-      return this.$store.state.hands[1].cards
     },
     playersCards () {
       return this.playerCards.length + this.dealerCards.length
@@ -107,10 +100,10 @@ export default {
     }
   },
   components: {
-    Sword,
-    Gold,
-    Wood,
-    Heart
+    // Sword,
+    // Gold,
+    // Wood,
+    // Heart
   }
 }
 </script>
@@ -126,7 +119,7 @@ export default {
   width: 6rem;
   justify-self: center;
   align-self: center;
-  transition: all .5s;
+  transition: all .8s;
   border-radius: 10px;
   // transition: all 2s cubic-bezier(0.85, 0.12, 0, 1.07) 0s;
 
@@ -158,7 +151,7 @@ export default {
   box-shadow: 2px 2px 20px -5px rgba(0, 0, 0, 0.25);
   backface-visibility: hidden;
   transform: rotateY(0deg);
-  transition: all 1s;
+  transition: all .4s;
   &.face-down {
     transform: rotateY(180deg);
     backface-visibility: hidden;
@@ -189,7 +182,7 @@ export default {
   // box-shadow: 2px 2px 20px -5px rgba(0, 0, 0, 0.25);
   transform: rotateY(180deg);
   backface-visibility: hidden;
-  transition: all 1s;
+  transition: all .4s;
   &.face-down {
     transform: rotateY(0deg);
     z-index: 9;

@@ -9,6 +9,9 @@
         <p>PLAYER: {{ results.player }}</p>
         <p>DEALER: {{ results.dealer }}</p>
       </div>
+      <div class="results">
+        <p>DEAL: {{ deal }}</p>
+      </div>
     </div>
   </div>
 </template>
@@ -21,7 +24,7 @@ export default {
   props: {
   },
   computed: {
-    ...mapState(['results', 'round'])
+    ...mapState(['results', 'round', 'deal'])
   },
   components: {
   }
@@ -59,7 +62,7 @@ export default {
   }
   .score {
     position: fixed;
-    top: 6rem;
+    top: 3rem;
     right: 3rem;
     color: rgba(255, 212, 20, .2);
     text-align: center;

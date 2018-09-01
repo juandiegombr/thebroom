@@ -11,43 +11,34 @@
 
 <script>
 import TheGameArea from '@/components/TheGameArea'
-import ThePlayer from '@/components/ThePlayer'
-import TheDealer from '@/components/TheDealer'
-import TheCommonCards from '@/components/TheCommonCards'
 import ThePlayButton from '@/components/ThePlayButton'
 import Card from '@/components/Card'
 import CardPositionMark from '@/components/CardPositionMark'
 import Menu from '@/components/Menu'
 import MessageOk from '@/components/messages/MessageOk'
+import { mapState } from 'vuex';
 export default {
   name: 'app',
   computed: {
-    cards () {
-      return this.$store.state.facedDownCards
-    },
-    deck () {
-      return this.$store.state.broomDeck
-    },
-    card () {
-      return this.$store.state.broomDeck[0]
-    },
-    playerCards () {
-      return this.$store.state.hands[0].cards
-    },
-    dealerCards () {
-      return this.$store.state.hands[1].cards
+    ...mapState(['status', 'turn', 'deal', 'deck', 'playerCards', 'dealerCards']),
+    test () {
+      return this.$store.state.restart
     },
     playersCards () {
       return this.playerCards.length + this.dealerCards.length
     }
   },
   watch: {
+    turn (value) {
+      console.log(value)
+    },
     playersCards (value) {
-      if (this.$store.state.deal === 6) return
-      if (!value) {
-        console.log('empty cards')
+      if (!value && !this.test && this.status !== 'finished' ) {
         this.$store.dispatch('startDeal')
       }
+    },
+    restart (value) {
+      console.log(vale, this.playersCards)
     }
   },
   mounted () {
@@ -58,9 +49,6 @@ export default {
     Card,
     CardPositionMark,
     TheGameArea,
-    ThePlayer,
-    TheDealer,
-    TheCommonCards,
     ThePlayButton,
     MessageOk
   }
