@@ -29,9 +29,6 @@ export default {
     }
   },
   watch: {
-    turn (value) {
-      console.log(value)
-    },
     playersCards (value) {
       if (!value && !this.test && this.status !== 'finished') {
         this.$store.dispatch('startDeal')

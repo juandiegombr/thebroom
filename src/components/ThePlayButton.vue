@@ -25,7 +25,7 @@
 
 <script>
 import { mapState } from 'vuex'
-import { getAllCombinations, getPlays, getBestPlay } from '@/utils/game'
+import { getTheBestMove, getAllCombinations, getPlays, getBestPlay, selectThePricelessCard, getBestPlayTest } from '@/utils/game'
 
 export default {
   name: 'ThePlayButton',
@@ -43,14 +43,7 @@ export default {
     }
   },
   watch: {
-    commonCards (value) {
-      if (value.length === 0) {
-        console.log('escoba!!!')
-        console.log(this.restart)
-      }
-    },
     turn (newTurn) {
-      console.log(newTurn)
       if (newTurn === 'dealer') {
         setTimeout(() => {
           this.dealerPlay()
@@ -71,6 +64,10 @@ export default {
       const playValue = this.selectedCards.reduce(sumValues, 0)
       if (playValue === 15) {
         this.$store.dispatch('correctPlay')
+        if (this.commonCards.length === 0) {
+          console.log('player broooooom!!!')
+          this.$store.commit('broom', 'player')
+        }
       } else {
         this.pass()
       }
@@ -80,22 +77,26 @@ export default {
       this.$store.dispatch('pass', {player: 'player', card: selectedCard})
     },
     dealerPlay () {
-      const combinations = getAllCombinations(this.commonCards)
-      const plays = getPlays(this.dealerCards, combinations)
-      const bestPlay = getBestPlay(plays)
-      console.log('plays', plays)
-      console.log('bestPlay', bestPlay)
-      if (bestPlay.length > 0) {
-        this.$store.dispatch('dealerPlay', bestPlay)
+      const bestMove = getTheBestMove(this.dealerCards, this.commonCards)
+      // const bestMoveCards = bestMove.cards
+      if (bestMove) {
+        console.log('bestMove', bestMove.cards)
+        this.$store.dispatch('dealerPlay', bestMove.cards)
           .then(() => {
             setTimeout(() => {
               this.$store.dispatch('correctPlay')
+              if (this.commonCards.length === 0) {
+                console.log('dealer broooooom!!!')
+                this.$store.commit('broom', 'dealer')
+              }
             }, 2000)
           })
       } else {
-        this.$store.commit('selectCard', this.dealerCards[0])
+        const pricelessCard = selectThePricelessCard(this.dealerCards)
+        console.log('priceless', pricelessCard)
+        this.$store.commit('selectCard', pricelessCard)
         setTimeout(() => {
-          this.$store.dispatch('pass', {player: 'dealer', card: this.dealerCards[0]})
+          this.$store.dispatch('pass', {player: 'dealer', card: pricelessCard})
         }, 2000)
       }
     },
