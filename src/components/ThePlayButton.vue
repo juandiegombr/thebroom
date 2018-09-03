@@ -1,31 +1,36 @@
 <template>
-  <div class="the-buttons" :style="{bottom: `calc(20% - 4.4rem)`, right: `calc(50% + 13rem)`}">
-    <div class="buttons-group">
-      <button class="the-play-button" @click="newRound">
-        DEAL
-        <i class="far fa-share-square button-icon"></i>
-      </button>
-      <button class="the-play-button" @click="resetGame">
-        RESET
-        <i class="far fa-star button-icon"></i>
-      </button>
+  <div>
+    <div class="the-player-buttons" :style="{bottom: `calc(20% - 4.4rem)`, left: `calc(50% + 10rem)`}">
+      <div class="buttons-group">
+        <button class="the-button" @click="play" @dblclick="double">
+          PLAY
+          <i class="far fa-thumbs-up button-icon"></i>
+        </button>
+        <button class="the-button" @click="play">
+          PASS
+          <i class="far fa-dizzy button-icon"></i>
+        </button>
+      </div>
     </div>
-    <div class="buttons-group">
-      <button class="the-play-button" @click="play" @dblclick="double">
-        PLAY
-        <i class="far fa-thumbs-up button-icon"></i>
-      </button>
-      <button class="the-play-button" @click="play">
-        PASS
-        <i class="far fa-dizzy button-icon"></i>
-      </button>
+    <div class="the-game-buttons" :style="{bottom: `calc(50% - 15rem)`, left: `calc(10% - 4rem)`}">
+      <div class="buttons-group">
+        <button class="the-button" @click="newRound">
+          NEXT ROUND
+          <i class="far fa-share-square button-icon"></i>
+        </button>
+        <button class="the-button" @click="resetGame">
+          RESET
+          <i class="far fa-star button-icon"></i>
+        </button>
+      </div>
     </div>
+
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
-import { getTheBestMove, getAllCombinations, getPlays, getBestPlay, selectThePricelessCard, getBestPlayTest } from '@/utils/game'
+import { getTheBestMove, selectThePricelessCard, dealerPassMove} from '@/utils/game'
 
 export default {
   name: 'ThePlayButton',
@@ -92,13 +97,16 @@ export default {
             }, 2000)
           })
       } else {
-        const pricelessCard = selectThePricelessCard(this.dealerCards)
-        console.log('priceless', pricelessCard)
-        this.$store.commit('selectCard', pricelessCard)
-        setTimeout(() => {
-          this.$store.dispatch('pass', {player: 'dealer', card: pricelessCard})
-        }, 2000)
+        this.dealerPass()
       }
+    },
+    dealerPass () {
+      const pricelessCard = dealerPassMove(this.commonCards, this.dealerCards)
+      console.log('priceless', pricelessCard)
+      this.$store.commit('selectCard', pricelessCard)
+      setTimeout(() => {
+        this.$store.dispatch('pass', {player: 'dealer', card: pricelessCard})
+      }, 2000)
     },
     resetGame () {
       this.$store.dispatch('resetGame')
@@ -111,51 +119,103 @@ export default {
 </script>
 
 <style lang="scss">
-.the-buttons {
+.the-player-buttons {
   position: absolute;
   display: flex;
   .buttons-group {
     display: flex;
     flex-direction: column;
+    justify-content: space-around;
+    height: 9rem;
   }
-}
-.the-play-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 15px;
-  padding: 15px;
-  margin-top: 1rem;
-  margin-left: 1rem;
-  background-color: #eee;
-  border: none;
-  font-weight: 700;
-  font-size: 17px;
-  color: #251f1f;
-  box-sizing: border-box;
-  box-shadow: 0 3px 0 0 rgba(0,0,0,.25);
-  transition: all .5s;
-  &:hover {
-    background-color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 0 0 rgba(0,0,0,.25);
+  .the-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    padding: 15px;
+    margin-left: 2rem;
+    background-color: rgba(255, 212, 20, 0.05);
+    border: 0.1rem solid rgba(255, 212, 20, 0.3);
+    font-weight: 700;
+    font-size: 17px;
+    color: rgba(255, 212, 20, 0.3);
+    box-sizing: border-box;
+    // box-shadow: 0 3px 0 0 rgba(0,0,0,.25);
+    transition: all .5s;
+    &:hover {
+      color: rgba(255, 212, 20, 0.5);
+      border: 0.1rem solid rgba(255, 212, 20, 0.5);
+      background-color: rgba(255, 212, 20, 0.1);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 0 0 rgba(0,0,0,.25);
+      .button-icon {
+        // transform: rotate(90deg);
+        color: rgba(255, 212, 20, 0.5);
+        animation: move-icon 1s forwards;
+      }
+    }
+    &:active {
+      transform: translateY(3px);
+      box-shadow: 0 0 0 0 rgba(0,0,0,.25);
+      transition: all .1s;
+    }
     .button-icon {
-      // transform: rotate(90deg);
-      animation: move-icon 1s forwards;
+      color: rgba(255, 212, 20, 0.3);
+      font-size: 1.4rem;
+      margin-left: .5rem;
+      transition: all .5s;
+      // animation: move-icon .5 infinite;
     }
   }
-  &:active {
-    transform: translateY(3px);
-    box-shadow: 0 0 0 0 rgba(0,0,0,.25);
-    transition: all .1s;
+}
+.the-game-buttons {
+  position: absolute;
+  display: flex;
+  .buttons-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 8rem;
+    height: 9rem;
   }
-  .button-icon {
-    font-size: 1.4rem;
-    margin-left: .5rem;
+  .the-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    padding: 15px;
+    background-color: #eee;
+    border: none;
+    font-weight: 700;
+    font-size: 17px;
+    color: #251f1f;
+    box-sizing: border-box;
+    box-shadow: 0 3px 0 0 rgba(0,0,0,.25);
     transition: all .5s;
-    // animation: move-icon .5 infinite;
+    &:hover {
+      background-color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 0 0 rgba(0,0,0,.25);
+      .button-icon {
+        // transform: rotate(90deg);
+        animation: move-icon 1s forwards;
+      }
+    }
+    &:active {
+      transform: translateY(3px);
+      box-shadow: 0 0 0 0 rgba(0,0,0,.25);
+      transition: all .1s;
+    }
+    .button-icon {
+      font-size: 1.4rem;
+      margin-left: .5rem;
+      transition: all .5s;
+      // animation: move-icon .5 infinite;
+    }
   }
 }
+
 
 @keyframes pulse-shadow{
     0%{
@@ -176,7 +236,8 @@ export default {
     transform: rotate(10deg) translateX(0px);
   }
   50% {
-    transform: rotate(10deg) translateX(5px);
+      // color: rgba(255, 212, 20, 0.5);
+      transform: rotate(10deg) translateX(5px);
   }
   100% {
     transform: rotate(10deg) translateX(0px);

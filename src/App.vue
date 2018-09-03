@@ -3,7 +3,7 @@
     <TheGameArea/>
     <Menu/>
     <ThePlayButton/>
-    <Card v-for="(card, index) in deck" :key="index" :card="card" :index="0" :position="0"/>
+    <Card v-for="(card, index) in deck" :key="index" :card="card"/>
     <CardPositionMark v-for="index in [0,1,2]" :key="index + 999" :positionIndex="index" position="dealer"/>
     <CardPositionMark v-for="index in [0,1,2]" :key="index + 99 " :positionIndex="index" position="player"/>
   </div>
@@ -53,6 +53,9 @@ export default {
 </script>
 
 <style lang="scss">
+html {
+  font-size: 16px;
+}
 body {
   margin: 0;
   width: 100vw;

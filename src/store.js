@@ -93,9 +93,8 @@ export default new Vuex.Store({
 				return
 			}
 			if (player === 'player') {
-				// firstCardOfDeck.facedDown = false
+				firstCardOfDeck.facedDown = false
 			}
-			firstCardOfDeck.facedDown = false
 			firstCardOfDeck.player = player
 			firstCardOfDeck.position = player
 			firstCardOfDeck.positionIndex = hands[player].length
@@ -130,16 +129,16 @@ export default new Vuex.Store({
 			if (state.deck.find(deckCard => card.player !== 'common' && deckCard.selected && deckCard.player === card.player)) return
 			const { index } = card
 			if (card.player === 'dealer') {
-				state.deck[index].facedDown = false
+				state.deck[39 - index].facedDown = false
 				console.log('dealer card selected')
 			}
 			state.selectedCards.push(card)
-			state.deck[index].selected = true
+			state.deck[39 - index].selected = true
 		},
 
 		deselectCard (state, card) {
 			const { index } = card
-			state.deck[index].selected = false
+			state.deck[39 - index].selected = false
 			state.selectedCards.some((selectedCard, i) => {
 				if (selectedCard === card) {
 					state.selectedCards.splice(i, 1)
@@ -149,10 +148,11 @@ export default new Vuex.Store({
 
 		removePlayedCard (state, card) {
 			const { player, index } = card
-			state.deck[index].position = `${state.turn}Deck`
-			state.deck[index].facedDown = true
-			state.deck[index].selected = false
-			state.deck[index].positionIndex = 0
+			const cardsOnWinnedDeck = state.deck.filter(c => c.position === `${state.turn}Deck`)
+			state.deck[39 - index].position = `${state.turn}Deck`
+			state.deck[39 - index].facedDown = true
+			state.deck[39 - index].selected = false
+			state.deck[39 - index].positionIndex = cardsOnWinnedDeck.length
 			const players = {
 				dealer: state.dealerCards,
 				player: state.playerCards,
@@ -273,14 +273,14 @@ export default new Vuex.Store({
 			state.selectedCards.forEach((selectedCard, index) => {
 				for (let i = 0; i < hands[turn].length; i++) {
 					const playerCard = hands[turn][i]
-					if (playerCard === selectedCard) {
+					if (playerCard.suit === selectedCard.suit && playerCard.value === selectedCard.value) {
 						commit('removePlayedCard', playerCard)
 						break
 					}
 				}
 				for (let i = 0; i < state.commonCards.length; i++) {
 					const commonCard = state.commonCards[i]
-					if (commonCard === selectedCard) {
+					if (commonCard.suit === selectedCard.suit && commonCard.value === selectedCard.value) {
 						commit('removePlayedCard', commonCard)
 					}
 				}

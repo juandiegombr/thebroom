@@ -2,7 +2,7 @@
 node_modules
 /dist
 /src/assets/images
-/src/utils/test.html
+/tests
 
 # local env files
 .env.local

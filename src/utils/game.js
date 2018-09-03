@@ -47,15 +47,15 @@ export const setOptions = (deck) => {
 			facedDown: true,
 			selected: false,
 			position: 'deck',
-			positionIndex: null,
+			positionIndex: index,
 			dealed: false
 		}
-	})
+	}).reverse()
 }
 
 // CALCULATE PASS MOVE
 
-export const pass = (commonCards, cards) => {
+export const dealerPassMove = (commonCards, cards) => {
 	let cardToPass
 	const sumValues = (prev, current) => prev + current.value
 	const commonCardsValue = commonCards.reduce(sumValues, 0)
@@ -66,18 +66,15 @@ export const pass = (commonCards, cards) => {
 	})
 	if (!cardToPass) {
 		cards.forEach(card => {
-			if ((card.value + commonCardsValue) > 15) {
+			if (commonCardsValue < 15 && (card.value + commonCardsValue) > 15) {
 				cardToPass = card
 			}
 		})
 	}
 	if (!cardToPass) {
-		cards.forEach(card => {
-			if ((card.value + commonCardsValue) > 15) {
-				cardToPass = card
-			}
-		})
+		cardToPass = selectThePricelessCard(cards)
 	}
+	return cardToPass
 }
 
 const compareCards = (a, b) => {
@@ -96,6 +93,9 @@ export const selectThePricelessCard = (cards) => {
 }
 
 // CALCULATE MOVE
+const clone = (arr) => {
+	return JSON.parse(JSON.stringify(arr))
+}
 
 const getCommonCardsCombinations = (commonCards) => {
 	let combinations = []
@@ -125,7 +125,8 @@ const getMoves = (hand, combinations, commonCards) => {
 	for (let i = 0; i < hand.length; i++) {
 		const quantityNedded = 15 - hand[i].value
 		const cardMoves = combinations.filter(item => item.quantity === quantityNedded)
-		const movesWithPlayerCard = cardMoves.map((move, index) => {
+		const cardMovesClone = clone(cardMoves)
+		const movesWithPlayerCard = cardMovesClone.map((move, index) => {
 			move.cards.push(hand[i])
 			move.broom = false
 			move.goldSeven = false
@@ -207,3 +208,15 @@ export const getTheBestMove = (hand, commonCards) => {
 	const sortedMoves = sortByMoveValueAndQuantityCards(moves)
 	return sortedMoves[0]
 }
+
+const common = [
+	{value: 4, suit: 'heart'},
+	{value: 4, suit: 'sword'},
+	{value: 10, suit: 'heart'},
+	{value: 10, suit: 'gold'},
+	{value: 3, suit: 'gold'}
+]
+const dealer = [
+	{value: 7, suit: 'gold'},
+	{value: 7, suit: 'sword'}
+]
