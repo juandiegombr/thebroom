@@ -41,7 +41,7 @@ export default {
   },
   watch: {
     turn (value) {
-      if (value === this.player)
+      if (value === 'player')
       this.show = true
       setTimeout(() => {
         this.show = false

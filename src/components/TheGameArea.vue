@@ -13,11 +13,14 @@
         <p>DEAL: {{ deal }}</p>
       </div>
     </div>
+		<CardPositionMark v-for="index in [0,1,2]" :key="index + 999" :positionIndex="index" position="dealer"/>
+		<CardPositionMark v-for="index in [0,1,2]" :key="index + 99 " :positionIndex="index" position="player"/>
   </div>
 </template>
 
 <script>
 import { mapState } from 'vuex'
+import CardPositionMark from '@/components/CardPositionMark'
 
 export default {
   name: 'TheGameArea',
@@ -27,6 +30,7 @@ export default {
     ...mapState(['results', 'round', 'deal'])
   },
   components: {
+    CardPositionMark
   }
 }
 </script>
@@ -42,7 +46,7 @@ export default {
   background: -moz-linear-gradient(-45deg, #52b152 1%, #008a00 49%, #005700 100%); /* FF3.6-15 */
   background: -webkit-linear-gradient(-45deg, #52b152 1%,#008a00 49%,#005700 100%); /* Chrome10-25,Safari5.1-6 */
   background: linear-gradient(135deg, #52b152 1%,#008a00 49%,#005700 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#52b152', endColorstr='#005700',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+  // filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#52b152', endColorstr='#005700',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
   z-index: -1;
   &-decoration {
     position: relative;
