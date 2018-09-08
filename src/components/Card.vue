@@ -67,7 +67,7 @@ export default {
 			if (playingCardsPositions.includes(this.card.position)) {
 				return 7
 			}
-			return .1
+			return 0.1
 		}
 	},
 	methods: {
@@ -76,7 +76,6 @@ export default {
 				this.$store.commit('deselectCard', this.card)
 			} else {
 				this.$store.commit('selectCard', this.card)
-				console.log(this.card)
 			}
 		}
 	},

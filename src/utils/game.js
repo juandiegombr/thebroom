@@ -209,14 +209,14 @@ export const getTheBestMove = (hand, commonCards) => {
 	return sortedMoves[0]
 }
 
-const common = [
-	{value: 4, suit: 'heart'},
-	{value: 4, suit: 'sword'},
-	{value: 10, suit: 'heart'},
-	{value: 10, suit: 'gold'},
-	{value: 3, suit: 'gold'}
-]
-const dealer = [
-	{value: 7, suit: 'gold'},
-	{value: 7, suit: 'sword'}
-]
+// const common = [
+// 	{value: 4, suit: 'heart'},
+// 	{value: 4, suit: 'sword'},
+// 	{value: 10, suit: 'heart'},
+// 	{value: 10, suit: 'gold'},
+// 	{value: 3, suit: 'gold'}
+// ]
+// const dealer = [
+// 	{value: 7, suit: 'gold'},
+// 	{value: 7, suit: 'sword'}
+// ]

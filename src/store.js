@@ -6,7 +6,7 @@ import { prepareDeck } from '@/utils/game'
 Vue.use(Vuex)
 
 const initialState = {
-	status: '',
+	status: 'playing',
 	deck: [],
 	playerCards: [],
 	dealerCards: [],
@@ -40,13 +40,17 @@ export default new Vuex.Store({
 			state.playerCardsWinned = []
 			state.dealerCardsWinned = []
 			state.turn = 'player'
-			state.status = ''
+			state.status = 'playing'
 			state.deal = 0
 			state.round = 1
 			state.results = {
 				player: 0,
 				dealer: 0
 			}
+		},
+
+		setTurn (state, turn) {
+			state.turn = turn
 		},
 
 		clearStateToNextRound (state) {
@@ -57,8 +61,7 @@ export default new Vuex.Store({
 			state.selectedCards = []
 			state.playerCardsWinned = []
 			state.dealerCardsWinned = []
-			state.turn = 'player'
-			state.status = ''
+			state.status = 'playing'
 			state.deal = 0
 			state.round++
 		},
@@ -130,7 +133,6 @@ export default new Vuex.Store({
 			const { index } = card
 			if (card.player === 'dealer') {
 				state.deck[39 - index].facedDown = false
-				console.log('dealer card selected')
 			}
 			state.selectedCards.push(card)
 			state.deck[39 - index].selected = true
@@ -182,6 +184,9 @@ export default new Vuex.Store({
 				'dealer': 'player'
 			}
 			state.turn = turns[state.turn]
+			if (state.deal === 6 && !state.dealerCards.length && !state.playerCards.length) {
+				state.status = 'finished'
+			}
 		},
 
 		setCardToCommonCards (state, {player, card}) {
@@ -253,14 +258,18 @@ export default new Vuex.Store({
 				}, 10 * dealQueue.length - 1)
 			}
 			commit('dealDid')
-			// setTimeout(() => {
-			// }, 100)
 		},
 
-		startDealCommonCards ({commit}) {
+		startDealCommonCards ({commit, state}) {
 			const commonCards = 4
 			for (let i = 0; i < commonCards; i++) {
-				setTimeout(() => { commit('deal', 'commonCard') }, 10 * i)
+				setTimeout(() => {
+					commit('deal', 'commonCard')
+					if (i === commonCards - 1) {
+						const turn = state.round % 2 ? 'player' : 'dealer'
+						commit('setTurn', turn)
+					}
+				}, 10 * i)
 			}
 		},
 
@@ -333,7 +342,6 @@ export default new Vuex.Store({
 				}
 			}
 			commit('setResults', {player: points.player, dealer: points.dealer})
-			console.log({player, dealer, points})
 		},
 		newRound ({commit, dispatch}) {
 			commit('clearStateToNextRound')

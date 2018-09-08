@@ -3,7 +3,13 @@
 		<TheGameArea/>
 		<Menu/>
 		<ThePlayButton/>
+<<<<<<< Updated upstream
 		<TheCards/>
+=======
+		<Card v-for="(card, index) in deck" :key="index" :card="card"/>
+		<CardPositionMark v-for="index in [0,1,2]" :key="index + 999" :positionIndex="index" position="dealer"/>
+		<CardPositionMark v-for="index in [0,1,2]" :key="index + 99 " :positionIndex="index" position="player"/>
+>>>>>>> Stashed changes
 	</div>
 </template>
 
@@ -44,12 +50,19 @@ export default {
 	components: {
 		Menu,
 		Card,
+<<<<<<< Updated upstream
 		TheCards,
 		CardPositionMark,
 		TheGameArea,
 		ThePlayButton,
 		MessageOk,
 		MessageBroom
+=======
+		CardPositionMark,
+		TheGameArea,
+		ThePlayButton,
+		MessageOk
+>>>>>>> Stashed changes
 	}
 }
 </script>
@@ -57,6 +70,12 @@ export default {
 <style lang="scss">
 html {
 	font-size: 16px;
+<<<<<<< Updated upstream
+=======
+	@media (max-height: 768px) {
+		font-size: calc(5px + 0.5vh)
+	}
+>>>>>>> Stashed changes
 }
 body {
 	margin: 0;
