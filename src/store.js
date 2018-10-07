@@ -19,10 +19,6 @@ const initialState = {
 	deal: 0,
 	restart: false,
 	round: 1,
-	_results: {
-		player: 0,
-		dealer: 0
-	},
 	results: {
 		player: [0],
 		dealer: [0]
@@ -42,7 +38,7 @@ export default new Vuex.Store({
 			playerResults[playerResults.length - 1]++
 		},
 		clearStateToNewGame (state, points) {
-			state.gamePoints = points
+			state.gamePoints = points || state.gamePoints
 			state.restart = true
 			state.playerCards = []
 			state.dealerCards = []
@@ -331,32 +327,30 @@ export default new Vuex.Store({
 		},
 
 		showResults ({commit, state}) {
-			const playerCardsWinned = state.deck.filter(card => card.position === 'playerDeck')
-			const dealerCardsWinned = state.deck.filter(card => card.position === 'dealerDeck')
-			const player = {
-				cards: playerCardsWinned.length,
-				goldSeven: playerCardsWinned.filter(card => card.value === 7 && card.suit === 'gold').length,
-				seven: playerCardsWinned.filter(card => card.value === 7).length,
-				gold: playerCardsWinned.filter(card => card.suit === 'gold').length
-			}
-			const dealer = {
-				cards: dealerCardsWinned.length,
-				goldSeven: dealerCardsWinned.filter(card => card.value === 7 && card.suit === 'gold').length,
-				seven: dealerCardsWinned.filter(card => card.value === 7).length,
-				gold: dealerCardsWinned.filter(card => card.suit === 'gold').length
-			}
 			const points = {
-				player: state.results.player[state.results.player.length - 1],
-				dealer: state.results.dealer[state.results.dealer.length - 1]
+				player: 0,
+				dealer: 0
 			}
-			for (const key in player) {
-				if (player[key] > dealer[key]) {
-					points.player++
-				} else if (player[key] < dealer[key]) {
-					points.dealer++
+			const countCards = (cards) => {
+				return {
+					cards: cards.length,
+					goldSeven: cards.filter(card => card.value === 7 && card.suit === 'gold').length,
+					seven: cards.filter(card => card.value === 7).length,
+					gold: cards.filter(card => card.suit === 'gold').length
 				}
 			}
-			commit('setResults', {player: points.player, dealer: points.dealer})
+			const cardsOnPlayerDeck = state.deck.filter(card => card.position === 'playerDeck')
+			const cardsOnDealerDeck = state.deck.filter(card => card.position === 'dealerDeck')
+			const playerResults = countCards(cardsOnPlayerDeck)
+			const dealerResults = countCards(cardsOnDealerDeck)
+			Object.keys(playerResults).forEach(key => {
+				if (playerResults[key] > dealerResults[key]) {
+					points.player++
+				} else if (playerResults[key] < dealerResults[key]) {
+					points.dealer++
+				}
+			})
+			commit('setResults', points)
 		},
 		newRound ({commit, dispatch}) {
 			commit('clearStateToNextRound')
@@ -370,7 +364,7 @@ export default new Vuex.Store({
 	getters: {
 		commonCards: state => state.deck.filter(card => card.position === 'common'),
 		dealerCards: state => state.deck.filter(card => card.position === 'dealer'),
-		dealeWinnedrCards: state => state.deck.filter(card => card.position === 'dealerDeck'),
+		dealerWinnedrCards: state => state.deck.filter(card => card.position === 'dealerDeck'),
 		playerCards: state => state.deck.filter(card => card.position === 'player'),
 		playerWinnedCards: state => state.deck.filter(card => card.position === 'playerDeck')
 	}
