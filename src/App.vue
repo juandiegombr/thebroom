@@ -3,13 +3,8 @@
 		<TheGameArea/>
 		<Menu/>
 		<ThePlayButton/>
-<<<<<<< Updated upstream
 		<TheCards/>
-=======
-		<Card v-for="(card, index) in deck" :key="index" :card="card"/>
-		<CardPositionMark v-for="index in [0,1,2]" :key="index + 999" :positionIndex="index" position="dealer"/>
-		<CardPositionMark v-for="index in [0,1,2]" :key="index + 99 " :positionIndex="index" position="player"/>
->>>>>>> Stashed changes
+		<Results/>
 	</div>
 </template>
 
@@ -17,11 +12,10 @@
 import TheGameArea from '@/components/TheGameArea'
 import TheCards from '@/components/TheCards'
 import ThePlayButton from '@/components/ThePlayButton'
-import Card from '@/components/Card'
 import CardPositionMark from '@/components/CardPositionMark'
 import Menu from '@/components/Menu'
-import MessageOk from '@/components/messages/MessageOk'
-import MessageBroom from '@/components/messages/MessageBroom'
+import Results from '@/components/messages/Results'
+// import MessageBroom from '@/components/messages/MessageBroom'
 import { mapState } from 'vuex'
 export default {
 	name: 'app',
@@ -44,25 +38,32 @@ export default {
 			console.log(value, this.playersCards)
 		}
 	},
+	methods: {
+		handleWindowResize() {
+			if (window.innerWidth < 480) {
+				this.$store.commit('resize', 'smartphone')
+			}
+			else if (window.innerWidth >= 480 && window.innerWidth < 768) {
+				this.$store.commit('resize', 'tablet')
+			}
+			else if (window.innerWidth >= 768) {
+				this.$store.commit('resize', 'desktop')
+			}
+			return this.screenSize;
+		},
+	},
 	mounted () {
+		window.addEventListener('resize', this.handleWindowResize)
+		this.handleWindowResize()
 		this.$store.dispatch('startBroomGame')
 	},
 	components: {
 		Menu,
-		Card,
-<<<<<<< Updated upstream
 		TheCards,
 		CardPositionMark,
 		TheGameArea,
 		ThePlayButton,
-		MessageOk,
-		MessageBroom
-=======
-		CardPositionMark,
-		TheGameArea,
-		ThePlayButton,
-		MessageOk
->>>>>>> Stashed changes
+		Results
 	}
 }
 </script>
@@ -70,17 +71,17 @@ export default {
 <style lang="scss">
 html {
 	font-size: 16px;
-<<<<<<< Updated upstream
-=======
+	height: 100%;
+	overflow: hidden;
+	box-sizing: border-box;
 	@media (max-height: 768px) {
-		font-size: calc(5px + 0.5vh)
+		font-size: calc(10px + 0.5vh)
 	}
->>>>>>> Stashed changes
 }
 body {
 	margin: 0;
 	width: 100vw;
-	height: 100vh;
+	height: 100%;
 	overflow: hidden;
 	// font-family: 'Avenir', Helvetica, Arial, sans-serif;
 }
@@ -96,13 +97,12 @@ button {
 	-moz-osx-font-smoothing: grayscale;
 	text-align: center;
 	color: #2c3e50;
-	height: 100vh;
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
 	width: 100vw;
-	height: 100vh;
+	height: 100%;
 	overflow: hidden;
 }
 #nav {

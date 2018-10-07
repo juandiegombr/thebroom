@@ -53,7 +53,6 @@ export default {
 </script>
 
 <style lang="scss">
-@import '@/assets/css/_variables.scss';
 .hand-result {
   position: absolute;
   width: 100%;

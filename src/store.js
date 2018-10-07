@@ -6,6 +6,7 @@ import { prepareDeck } from '@/utils/game'
 Vue.use(Vuex)
 
 const initialState = {
+	gamePoints: 5,
 	status: 'playing',
 	deck: [],
 	playerCards: [],
@@ -18,20 +19,30 @@ const initialState = {
 	deal: 0,
 	restart: false,
 	round: 1,
-	results: {
+	_results: {
 		player: 0,
 		dealer: 0
-	}
+	},
+	results: {
+		player: [0],
+		dealer: [0]
+	},
+	device: null
 }
 
 export default new Vuex.Store({
 	state: JSON.parse(JSON.stringify(initialState)),
 
 	mutations: {
-		broom (state, player) {
-			state.results[player]++
+		resize (state, device) {
+			state.device = device
 		},
-		clearStateToNewGame (state) {
+		broom (state, player) {
+			const playerResults = state.results[player]
+			playerResults[playerResults.length - 1]++
+		},
+		clearStateToNewGame (state, points) {
+			state.gamePoints = points
 			state.restart = true
 			state.playerCards = []
 			state.dealerCards = []
@@ -44,8 +55,8 @@ export default new Vuex.Store({
 			state.deal = 0
 			state.round = 1
 			state.results = {
-				player: 0,
-				dealer: 0
+				player: [0],
+				dealer: [0]
 			}
 		},
 
@@ -64,6 +75,8 @@ export default new Vuex.Store({
 			state.status = 'playing'
 			state.deal = 0
 			state.round++
+			state.results.player.push(0)
+			state.results.dealer.push(0)
 		},
 
 		cardsToDeck (state) {
@@ -223,13 +236,15 @@ export default new Vuex.Store({
 		},
 
 		setResults (state, {player, dealer}) {
-			state.results.player = player
-			state.results.dealer = dealer
+			const playerResults = state.results.player
+			const dealerResults = state.results.dealer
+			playerResults[playerResults.length - 1] = playerResults[playerResults.length - 1] + player
+			dealerResults[dealerResults.length - 1] = dealerResults[dealerResults.length - 1] + dealer
 		}
 	},
 	actions: {
-		resetGame ({commit, dispatch}) {
-			commit('clearStateToNewGame')
+		resetGame ({commit, dispatch}, points) {
+			commit('clearStateToNewGame', points)
 			commit('cardsToDeck')
 			setTimeout(() => {
 				dispatch('startBroomGame')
@@ -331,8 +346,8 @@ export default new Vuex.Store({
 				gold: dealerCardsWinned.filter(card => card.suit === 'gold').length
 			}
 			const points = {
-				player: state.results.player,
-				dealer: state.results.dealer
+				player: state.results.player[state.results.player.length - 1],
+				dealer: state.results.dealer[state.results.dealer.length - 1]
 			}
 			for (const key in player) {
 				if (player[key] > dealer[key]) {

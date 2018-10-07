@@ -1,18 +1,28 @@
 <template>
 	<div>
-		<div class="the-player-buttons" :style="{bottom: `calc(20% - 4.4rem)`, left: `calc(50% + 10rem)`}">
-			<div class="buttons-group">
-				<button class="the-button" @click="play" @dblclick="double">
+		<div class="the-player-buttons"
+			:class="{'mobile': isMobile}"
+			:style="buttonStyle">
+			<div class="buttons-group" :class="{'mobile': isMobile}">
+				<button class="the-button"
+					:class="{'mobile': isMobile}"
+					@click="play"
+					:disabled="!canMove || turn !== 'player'"
+					@dblclick="double">
 					PLAY
 					<i class="far fa-thumbs-up button-icon"></i>
 				</button>
-				<button class="the-button" @click="play">
+				<button class="the-button"
+					:class="{'mobile': isMobile}"
+					:disabled="turn !== 'player'"
+					@click="pass">
 					PASS
 					<i class="far fa-dizzy button-icon"></i>
 				</button>
 			</div>
 		</div>
-		<div class="the-game-buttons" :style="{bottom: `calc(50% - 15rem)`, left: `calc(10% - 4rem)`}">
+		<div class="the-game-buttons" :style="{bottom: `calc(50% - 15rem)`, left: `calc(-20% - 4rem)`}">
+		<!-- <div class="the-game-buttons" :style="{bottom: `calc(50% - 15rem)`, left: `calc(10% - 4rem)`}"> -->
 			<div class="buttons-group">
 				<button class="the-button" @click="newRound">
 					NEXT ROUND
@@ -42,9 +52,33 @@ export default {
 		}
 	},
 	computed: {
-		...mapState(['status', 'turn', 'deal', 'restart', 'playerCards', 'dealerCards', 'selectedCards', 'commonCards']),
+		...mapState(['device', 'status', 'turn', 'deal', 'restart', 'playerCards', 'dealerCards', 'selectedCards', 'commonCards']),
+		isMobile () {
+			return this.device === 'smartphone'
+		},
 		areCardsOnPlayers () {
 			return this.playerCards.length + this.dealerCards.length
+		},
+		value () {
+			const value = this.selectedCards.reduce((prev, current) => prev + current.value, 0)
+			return value
+		},
+		canMove () {
+			const value = this.selectedCards.reduce((prev, current) => prev + current.value, 0)
+			return value === 15
+		},
+		buttonStyle () {
+			if (this.isMobile) {
+				return {
+					// bottom: `calc(10% - 4.4rem)`,
+					bottom: `0`,
+					left: `0`
+				}
+			}
+			return {
+				bottom: `calc(20% - 4.4rem)`,
+				left: `calc(50% + 10rem)`
+			}
 		}
 	},
 	watch: {
@@ -74,7 +108,7 @@ export default {
 					this.$store.commit('broom', 'player')
 				}
 			} else {
-				this.pass()
+				console.log('not 15')
 			}
 		},
 		pass () {
@@ -118,13 +152,27 @@ export default {
 .the-player-buttons {
 	position: absolute;
 	display: flex;
+	z-index: 99;
+	&.mobile {
+		width: 100%;
+	}
 	.buttons-group {
 		display: flex;
 		flex-direction: column;
 		justify-content: space-around;
 		height: 9rem;
+		&.mobile {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			grid-gap: 1rem;
+			width: 100%;
+			height: auto;
+			padding: 0 4rem 3rem;
+		}
 	}
 	.the-button {
+		user-select: none;
+		cursor: pointer;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -139,6 +187,14 @@ export default {
 		box-sizing: border-box;
 		// box-shadow: 0 3px 0 0 rgba(0,0,0,.25);
 		transition: all .5s;
+		&:disabled {
+			opacity: 0.5;
+			pointer-events: none;
+		}
+
+		&.mobile {
+			margin-left: 0;
+		}
 		&:hover {
 			color: rgba(255, 212, 20, 0.5);
 			border: 0.1rem solid rgba(255, 212, 20, 0.5);
