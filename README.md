@@ -1,7 +1,7 @@
 # The Broom :black_joker:	
 A spanish cards game made with Vue. [Rules](https://es.wikipedia.org/wiki/Escoba_del_15)
 
-![demo gif](https://github.com/juandiegombr/the-broom/blob/master/demo.gif?raw=true)
+![demo gif](https://github.com/juandiegombr/thebroom/blob/master/demo.gif?raw=true)
 
 ## PLAY NOW!
 
