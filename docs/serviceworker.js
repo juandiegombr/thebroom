@@ -21,6 +21,9 @@ self.addEventListener('install', (event) => {
         console.log('Opened cache')
         return cache.addAll(urlsToCache)
       })
+      .catch(err => {
+        console.log(err)
+      })
   )
 })
 self.addEventListener('activate', (event) => {

@@ -1,6 +1,6 @@
 self.__precacheManifest = [
   {
-    "revision": "36d4958821141da1d4597d1ef595abf4",
+    "revision": "d059d21ee0db9f66048afd10467f297c",
     "url": "/thebroom/serviceworker.js"
   },
   {
