@@ -1,15 +1,14 @@
 var CACHE_NAME = 'the-broom-cache-v1'
 var urlsToCache = [
-  '/',
-  '/index.html',
-  '/chunk-vendors.js',
-  '/favicon.ico',
-  '/serviceworker.js',
+  '/thebroom',
+  '/thebroom/index.html',
+  '/thebroom/chunk-vendors.js',
+  '/thebroom/favicon.ico',
   '/thebroom/app.js',
-  'thebroom/img/icons/favicon-16x16.png',
-  'thebroom/img/icons/favicon-32x32.png',
-  'https://use.fontawesome.com/releases/v5.3.1/css/all.css',
+  '/thebroom/img/icons/favicon-16x16.png',
+  '/thebroom/img/icons/favicon-32x32.png',
   '/thebroom/manifest.json',
+  'https://use.fontawesome.com/releases/v5.3.1/css/all.css',
   'https://fonts.googleapis.com/css?family=Montserrat',
 ]
 
@@ -25,13 +24,12 @@ self.addEventListener('install', (event) => {
   )
 })
 self.addEventListener('activate', (event) => {
-  console.log('activated')
+  console.log('Activated')
 })
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request)
     .then( response => {
-      // Cache hit - return response
       if (response) {
         console.log('Request found in cache!', event.request.url)
         return response
