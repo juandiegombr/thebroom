@@ -12,11 +12,11 @@ self.__precacheManifest = [
     "url": "/thebroom/js/chunk-vendors.92850225.js"
   },
   {
-    "revision": "615ee41196dde48ed987",
-    "url": "/thebroom/js/app.0709ec94.js"
+    "revision": "97d33bf9f9ce4efd6ac0",
+    "url": "/thebroom/js/app.79aef311.js"
   },
   {
-    "revision": "c76da95cf217c2b7f0c5661b837ca08e",
+    "revision": "90ac83452032b49324db25c16f2ab9d6",
     "url": "/thebroom/index.html"
   },
   {
@@ -24,7 +24,7 @@ self.__precacheManifest = [
     "url": "/thebroom/img/back.57beb8e3.svg"
   },
   {
-    "revision": "615ee41196dde48ed987",
-    "url": "/thebroom/css/app.12d22cbe.css"
+    "revision": "97d33bf9f9ce4efd6ac0",
+    "url": "/thebroom/css/app.1c9aab10.css"
   }
 ];

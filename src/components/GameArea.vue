@@ -1,6 +1,6 @@
 <template>
 	<div class="game-area" :class="{'mobile': device === 'smartphone'}">
-		<div class="game-area-background__decoration" :class="{'mobile': device === 'smartphone'}"></div>
+		<div class="game-area__decoration" :class="{'mobile': device === 'smartphone'}"></div>
 		<CardPositionMark v-for="index in [0,1,2]" :key="index + 999" :positionIndex="index" position="dealer"/>
 		<CardPositionMark v-for="index in [0,1,2]" :key="index + 99 " :positionIndex="index" position="player"/>
 	</div>
@@ -27,14 +27,6 @@ export default {
 <style lang="scss">
 
 .game-area {
-	display: grid;
-	box-sizing: border-box;
-	height: 100%;
-	padding: 60px;
-	grid-template-columns: 10% 10% 10% 10% 10% 10% 10% 10% 10% 10%;
-	grid-template-rows: 25% 25% 25% 25%;
-	justify-content: center;
-	align-items: center;
 	box-sizing: border-box;
 	position: fixed;
 	width: 100%;
@@ -55,12 +47,15 @@ export default {
 		width: 100%;
 		height: 100%;
 		border: .1rem solid rgba(255, 212, 20, .2);
+		border-radius: 1rem;
 
 		&.mobile {
 			border-top: none;
+			border-radius: 0;
 		
 			&::before {
 				border-top: none;
+				border-radius: 0;
 				top: 0;
 			}
 		}
@@ -73,6 +68,7 @@ export default {
 			top: .2rem;
 			bottom: .2rem;
 			border: .1rem solid rgba(255, 212, 20, .2);
+			border-radius: 0.8rem;
 		}
 	}
 }
