@@ -2,40 +2,44 @@
 <div class="card"
 	:class="{'selected': card.selected, 'mobile': device === 'smartphone' && card.player !== 'player'}"
 	:style="cardStyle">
-		<div class="card-front" :class="{'face-down': card.facedDown, 'selected': card.selected}" @click="moveCard">
-			<!-- <div class="suit-wrapper">
-				<component :is="card.suit"/>
-			</div> -->
-			<span :class="`card-value ${suitColor}-color`">
-				{{card.value}}
-			</span>
+		<div class="card-front" 
+			:class="{
+				'face-down': card.facedDown,
+				'selected': card.selected}"
+				@click="moveCard">
+			<div class="card-border" :class="`${suitColor}-color`">
+				<span class="card-value">
+					{{card.value}}
+				</span>
+				<span class="card-value-down">
+					{{card.value}}
+				</span>
+			</div>
 		</div>
 		<div class="card-back" :class="{'face-down': card.facedDown}">
-			<div class="card-back-design"></div>
-			<div class="card-back-corners-top"></div>
-			<div class="card-back-corners-bottom"></div>
+			<img :src="back" alt="back">
 		</div>
 	</div>
 </template>
 
 <script>
-// import Sword from './Suits/Sword'
-// import Gold from './Suits/Gold'
-// import Wood from './Suits/Wood'
-// import Heart from './Suits/Heart'
+import back from '@/assets/back.svg'
 
 import { mapState } from 'vuex'
 
 export default {
 	name: 'Card',
+
 	props: {
 		card: {
 			type: Object,
 			required: true
 		}
 	},
+
 	computed: {
 		...mapState(['playerCards', 'dealerCards', 'commonCards', 'device']),
+
 		suitColor () {
 			const colors = {
 				heart: 'red',
@@ -45,11 +49,12 @@ export default {
 			}
 			return colors[this.card.suit]
 		},
+
 		playersCards () {
 			return this.playerCards.length + this.dealerCards.length
 		},
+
 		commonCardsInitialPosition () {
-			// return (this.commonCards.length / 2 * 6) + (this.commonCards.length - 1) / 2
 			if (this.isSmartphone) {
 				if (this.commonCards.length > 4) {
 					if (this.card.positionIndex < 4) {
@@ -62,6 +67,7 @@ export default {
 			}
 			return ((this.commonCards.length / 2 * 6) + (this.commonCards.length - 1) / 2)
 		},
+
 		positionLeftGap () {
 			const positionsLeftGap = {
 				dealerDeck: 0,
@@ -73,6 +79,7 @@ export default {
 			}
 			return positionsLeftGap[this.card.position]
 		},
+
 		gapBetweenCards () {
 			const playingCardsPositions = ['dealer', 'player', 'common']
 			if (this.device === 'smartphone') {
@@ -89,12 +96,15 @@ export default {
 			}
 			return 0.1
 		},
+
 		isSmartphone () {
 			return this.device === 'smartphone'
 		},
+		
 		isCommon () {
 			return this.card.position === 'common'
 		},
+		
 		cardStyle () {
 			if (this.isSmartphone && this.isCommon) {
 				let position = this.card.positionIndex
@@ -119,6 +129,7 @@ export default {
 			}
 		}
 	},
+
 	watch: {
 		commonCards (newCommonCards) {
 			if (this.card.player !== 'common') return
@@ -130,6 +141,7 @@ export default {
 				}
 			}
 		},
+
 		device (newValue) {
 			const mobilePositions = {
 				deck: {top: 50, left: -40},
@@ -155,6 +167,7 @@ export default {
 			}
 		}
 	},
+
 	methods: {
 		moveCard () {
 			if (this.card.selected) {
@@ -164,6 +177,7 @@ export default {
 			}
 		}
 	},
+
 	created () {
 		const mobilePositions = {
 			deck: {top: 50, left: -40},
@@ -173,12 +187,15 @@ export default {
 			player: {top: 70, left: 50},
 			playerDeck: {top: 70, left: 140}
 		}
+
 		if (window.outerWidth < 500) {
 			this.positions = mobilePositions
 		}
 	},
+
 	data () {
 		return {
+			back,
 			cardSelected: false,
 			positions: {
 				deck: {top: 50, left: 10},
@@ -189,18 +206,12 @@ export default {
 				playerDeck: {top: 80, left: 80}
 			}
 		}
-	},
-	components: {
-		// Sword,
-		// Gold,
-		// Wood,
-		// Heart
 	}
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss">
+<style lang="scss" scoped>
+
 .card {
 	user-select: none;
 	position: absolute;
@@ -210,17 +221,43 @@ export default {
 	justify-self: center;
 	align-self: center;
 	transition: all .8s;
+
 	&.mobile {
 		transform: scale(0.8);
 	}
+	
 	.selected {
 		transform: scale(1.1) !important;
 		box-shadow: 0 0 8px 6px rgba(255, 255, 255, 0.23), 0 0 8px 3px rgba(255, 255, 255, 0.23), 0 0 4px 3px rgba(255, 255, 255, 0.23);
 	}
+	
 	&-value {
-		font-size: 55px;
+		position: absolute;
+    font-size: 1.5rem;
+		font-weight: 700;
+    top: 0.1rem;
+    left: 0.4rem;
+	}
+
+	&-value-down {
+		position: absolute;
+    font-size: 1.5rem;
+		font-weight: 700;
+		bottom: 0.1rem;
+		right: 0.4rem;
+		transform: rotate(180deg)
 	}
 }
+
+.card-border {
+	width: 100%;
+	height: 100%;
+	border: 1px solid currentColor;
+	border-radius: 0.3rem;
+	box-sizing: border-box;
+	position: relative;
+}
+
 .card-front {
 	position: absolute;
 	box-sizing: border-box;
@@ -229,7 +266,7 @@ export default {
 	align-items: center;
 	height: 100%;
 	width: 100%;
-	padding: 10%;
+	padding: 8%;
 	background-color: white;
 	border-radius: .5rem;
 	border: 1px solid rgba(0, 0, 0, 0.1);
@@ -237,16 +274,19 @@ export default {
 	backface-visibility: hidden;
 	transform: rotateY(0deg);
 	transition: all .4s;
+	
 	&.face-down {
 		transform: rotateY(180deg);
 		backface-visibility: hidden;
 		z-index: 9;
 	}
+	
 	&.matched {
 		transform: rotateY(0deg);
 		backface-visibility: hidden;
 		z-index: 9;
 	}
+	
 	.suit-wrapper {
 		position: absolute;
 		left: 10%;
@@ -255,13 +295,14 @@ export default {
 		height: 100%;
 	}
 }
+
 .card-back {
 	cursor: auto;
 	position: absolute;
 	box-sizing: border-box;
 	height: 100%;
 	width: 100%;
-	padding: 10%;
+	padding: 0;
 	background-color: white;
 	border-radius: .5rem;
 	border: 1px solid rgba(0, 0, 0, 0.1);
@@ -269,70 +310,21 @@ export default {
 	transform: rotateY(180deg);
 	backface-visibility: hidden;
 	transition: all .4s;
+
+	img {
+		width: 100%;
+		height: 100%;
+	}
+	
 	&.face-down {
 		transform: rotateY(0deg);
 		z-index: 9;
 	}
+	
 	&.matched {
 		transform: rotateY(180deg);
 		z-index: 9;
 	}
-	&-design {
-		position: absolute;
-		left: 15px;
-		right: 15px;
-		top: 15px;
-		bottom: 15px;
-		border-right: 5px solid rgb(8, 177, 76);
-		border-top: 5px solid red;
-		border-left: 5px solid rgb(255, 196, 0);
-		border-bottom: 5px solid rgb(0, 136, 255);
-		&::after {
-			// content: '';
-			position: absolute;
-			top: 5px;
-			bottom: 5px;
-			left: 5px;
-			right: 5px;
-			border-right: 2px solid rgb(8, 177, 76);
-			border-top: 2px solid red;
-			border-left: 2px solid rgb(255, 196, 0);
-			border-bottom: 2px solid rgb(0, 136, 255);
-		}
-	}
-	&-corners-top {
-		position: absolute;
-		left: 15px;
-		right: 15px;
-		top: 15px;
-		height: 5px;
-		border-right: 5px solid rgb(255, 196, 0);
-		border-left: 5px solid rgb(0, 136, 255);
-	}
-	&-corners-bottom {
-		position: absolute;
-		left: 15px;
-		right: 15px;
-		bottom: 15px;
-		height: 5px;
-		border-right: 5px solid red;
-		border-left: 5px solid rgb(8, 177, 76);
-	}
-	.pulse-shadow {
-		-webkit-animation:pulse-shadow 2s infinite!important;
-		animation:pulse-shadow 2s infinite!important;
-		z-index: 1;
-	}
 
-}
-@keyframes pulse-shadow{
-		0%{
-				box-shadow: 0 0 8px 6px rgba(255, 255, 255, 0.0), 0 0 8px 3px rgba(255, 255, 255, 0.0), 0 0 4px 3px rgba(255, 255, 255, 0.0);
-				/* border: 1px solid white; */
-		}
-		100%{
-				box-shadow: 0 0 8px 6px rgba(255, 255, 255, 0.23), 0 0 8px 3px rgba(255, 255, 255, 0.23), 0 0 4px 3px rgba(255, 255, 255, 0.23);
-				/* border: 1px solid white; */
-		}
 }
 </style>

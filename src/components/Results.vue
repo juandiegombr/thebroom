@@ -6,58 +6,65 @@
         class="message-wrapper">
       </div>
     </transition>
+
     <transition name="message">
+
       <div 
-      v-if="status === 'finished'"
-      class="message-result"
-      :class="{smartphone: device === 'smartphone'}">
-      <div v-if="isFinished" class="finish-message">
-        <div v-if="winner === 'player'">
-          <i class="far fa-thumbs-up"></i>
-          You won!
+        v-if="status === 'finished'"
+        class="result-message"
+        :class="{smartphone: device === 'smartphone'}">
+        
+        <div v-if="isFinished" class="finish-message">
+          <div v-if="winner === 'player'">
+            <i class="far fa-thumbs-up"></i>
+            You won!
+          </div>
+          <div v-else>
+            <i class="far fa-thumbs-down"></i>
+            You lost!
+          </div>
         </div>
-        <div v-else>
-          <i class="far fa-thumbs-down"></i>
-          You lost!
+
+        <div class="results-container">
+          <table>
+            <tr>
+              <th v-for="(column, i) in columns" :key="i">{{ column }}</th>
+            </tr>
+            <tr v-for="(row, i) in rows" :key="i">
+              <td v-for="(data, i) in row" :key="i+10">{{ data }}</td>
+            </tr>
+          </table>
         </div>
-      </div>
-      <div class="results-container">
-        <table>
-          <tr>
-            <th v-for="(column, i) in columns" :key="i">{{ column }}</th>
-          </tr>
-          <tr v-for="(row, i) in rows" :key="i">
-            <td v-for="(data, i) in row" :key="i+10">{{ data }}</td>
-          </tr>
-        </table>
-      </div>
-      <div class="buttons" :style="{gridTemplateColumns: isFinished ? '1fr' : '1fr 1fr'}">
-				<button class="the-button" @click="newGame">
-					START A NEW GAME
-				</button>
-				<button v-if="!isFinished" class="the-button" @click="newRound">
-					NEXT ROUND
-        </button>
-      </div>
+
+        <div class="results-buttons" :style="{gridTemplateColumns: isFinished ? '1fr' : '1fr 1fr'}">
+          <button class="results-buttons__button" @click="newGame">
+            START A NEW GAME
+          </button>
+          <button v-if="!isFinished" class="results-buttons__button" @click="newRound">
+            NEXT ROUND
+          </button>
+        
+        </div>
+      
       </div>
     </transition>
   </div>
 </template>
 
 <script>
+
 import { mapState } from 'vuex'
+
 export default {
   data () {
-      return {
-          show: false,
-          table: [
-            ['Player', 1, 2, 3],
-            ['Dealer', 1, 2, 3],
-          ]
-      }
+    return {
+      show: false
+    }
   },
+
   computed: {
     ...mapState(['results', 'round', 'status', 'device', 'gamePoints']),
+    
     columns () {
       let columns = ['Round']
       for (let i = 0; i <= this.round; i++) {
@@ -69,6 +76,7 @@ export default {
       }
       return columns
     },
+
     rows () {
       let rows = [['Player'],['Dealer']]
       for (let i = 0; i <= this.results.player.length; i++) {
@@ -89,15 +97,18 @@ export default {
       }
       return rows
     },
+
     total () {
       return {
         player: this.results.player.reduce((a, b) => a + b),
         dealer: this.results.dealer.reduce((a, b) => a + b)
       }
     },
+
     isFinished () {
       return this.total.player >= this.gamePoints || this.total.dealer >= this.gamePoints
     },
+    
     winner () {
       let winner
       if (this.isFinished) {
@@ -106,6 +117,7 @@ export default {
       return winner
     }
   },
+  
   watch: {
     status (newValue) {
       if (status === 'finished') {
@@ -113,24 +125,23 @@ export default {
       }
     }
   },
+
   methods: {
     timer () {
         this.show = !this.show
     },
-		newRound () {
-			this.$store.dispatch('newRound')
-		},
-		newGame () {
-			this.$store.dispatch('resetGame')
-		}
-  },
-  mounted () {
-      // setInterval(this.timer, 2000)
+    newRound () {
+      this.$store.dispatch('newRound')
+    },
+    newGame () {
+      this.$store.dispatch('resetGame')
+    }
   }
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+
 .message-wrapper {
   position: absolute;
   top: 0;
@@ -141,7 +152,8 @@ export default {
   z-index: 99;
   background-color: rgba(0, 0, 0, 0.5);
 }
-.message-result {
+
+.result-message {
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -168,100 +180,121 @@ export default {
     width: 100vw;
     height: 100vh;
   }
+
   .finish-message {
     margin-bottom: 2rem;
   }
-  .buttons {
+  
+  .results-buttons {
     display: grid;
     grid-gap: 1rem;
     margin-top: 2rem;
-    .the-button {
-      user-select: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 15px;
-      background-color: transparent;
-      border: 1px solid white;
-      border-radius: 1.2rem;
-      font-weight: 700;
-      font-size: 17px;
-      color: white;
-      // color: rgb(186, 186, 186);
-      box-sizing: border-box;
-      // box-shadow: 0 3px 0 0 rgba(0,0,0,.25);
-      transition: all .5s;
-      &:hover {
-        background-color: rgba(255, 255, 255, 0.1);
-      }
-    }
-    .fa-right {
-      margin-left: .5rem;
+  }
+
+  .results-buttons__button {
+    user-select: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    background-color: transparent;
+    border: 1px solid white;
+    border-radius: 1.2rem;
+    font-weight: 700;
+    font-size: 17px;
+    color: white;
+    box-sizing: border-box;
+    transition: all .5s;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
     }
   }
-  .results-container {
-    max-width: 100%;
-    overflow-x: scroll;
+
+  .fa-right {
+    margin-left: .5rem;
   }
+}
+
+.results-container {
+  max-width: 100%;
+  overflow-x: scroll;
+  
   table {
     border-spacing: 0;
+    
     td {
       min-width: 3rem;
     }
+
     tr:nth-child(1) {
       th {
         border-bottom: 1px solid #777;
         padding: 0 1rem 1rem;
       }
     }
+
     tr:last-child {
       td {
         padding: 1rem 1rem 0;
       }
     }
-    tr{
+
+    tr {
       th, td {
         border-right: 1px solid #777;
         padding: 1rem;
       }
     }
-    tr{
+
+    tr {
       th:last-child, td:last-child {
         border-right: none;
       }
     }
   }
 }
+
+
 .wrapper-enter-active {
   transition: all 1s ease-in-out;
 }
+
 .wrapper-leave-active {
   transition: all 1s ease-in-out;
 }
+
 .wrapper-enter {
   background-color: rgba(0, 0, 0, 0);
 }
+
 .wrapper-enter-to {
   background-color: rgba(0, 0, 0, 0.5);
 }
+
 .wrapper-leave-to {
   background-color: rgba(0, 0, 0, 0);
 }
+
 .message-enter-active {
   transition: all 1s ease-in-out;
 }
+
 .message-leave-active {
   transition: all 1s ease-in-out;
 }
+
 .message-enter {
   transform: translateX(100px);
   opacity: 0;
 }
+
 .message-leave-to {
   transform: translateX(-100px);
   opacity: 0;
 }
+
 .is-spinningg {
   animation: spin 1s ease;
   transform-origin: center;
@@ -269,6 +302,7 @@ export default {
   transform-style: preserve-3d;
   backface-visibility: hidden;
 }
+
 @keyframes spin {
   0% {
     transform: rotateX(0);

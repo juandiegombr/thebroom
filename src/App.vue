@@ -1,43 +1,42 @@
 <template>
 	<div id="app">
-		<TheGameArea/>
+		<GameArea/>
 		<Menu/>
-		<ThePlayButton/>
-		<TheCards/>
+		<PlayButtons/>
+		<CardsWrapper/>
 		<Results/>
 	</div>
 </template>
 
 <script>
-import TheGameArea from '@/components/TheGameArea'
-import TheCards from '@/components/TheCards'
-import ThePlayButton from '@/components/ThePlayButton'
+import GameArea from '@/components/GameArea'
+import CardsWrapper from '@/components/CardsWrapper'
+import PlayButtons from '@/components/PlayButtons'
 import CardPositionMark from '@/components/CardPositionMark'
 import Menu from '@/components/Menu'
-import Results from '@/components/messages/Results'
-// import MessageBroom from '@/components/messages/MessageBroom'
+import Results from '@/components/Results'
+
 import { mapState } from 'vuex'
+
 export default {
 	name: 'app',
+
 	computed: {
-		...mapState(['status', 'turn', 'deal', 'deck', 'playerCards', 'dealerCards']),
-		test () {
-			return this.$store.state.restart
-		},
+		...mapState(['restart', 'status', 'turn', 'deal', 'deck', 'playerCards', 'dealerCards']),
+
 		playersCards () {
 			return this.playerCards.length + this.dealerCards.length
 		}
 	},
+
 	watch: {
 		playersCards (value) {
-			if (!value && !this.test && this.status !== 'finished') {
+			if (!value && !this.restart && this.status !== 'finished') {
 				this.$store.dispatch('startDeal')
 			}
-		},
-		restart (value) {
-			console.log(value, this.playersCards)
 		}
 	},
+
 	methods: {
 		handleWindowResize() {
 			if (window.innerWidth < 480) {
@@ -75,38 +74,43 @@ export default {
 	
 	components: {
 		Menu,
-		TheCards,
+		CardsWrapper,
 		CardPositionMark,
-		TheGameArea,
-		ThePlayButton,
+		GameArea,
+		PlayButtons,
 		Results
 	}
 }
 </script>
 
 <style lang="scss">
+
 html {
 	font-size: 16px;
 	height: 100%;
 	overflow: hidden;
 	box-sizing: border-box;
+
 	@media (max-height: 768px) {
 		font-size: calc(10px + 0.5vh)
 	}
 }
+
 body {
 	margin: 0;
 	width: 100vw;
 	height: 100%;
 	overflow: hidden;
-	// font-family: 'Avenir', Helvetica, Arial, sans-serif;
 }
+
 button {
 	font-family: 'Montserrat', 'sans-serif';
+
 	&:focus {
 		outline: none
 	}
 }
+
 #app {
 	font-family: 'Montserrat', 'sans-serif';
 	-webkit-font-smoothing: antialiased;
@@ -121,8 +125,10 @@ button {
 	height: 100%;
 	overflow: hidden;
 }
+
 #nav {
 	padding: 30px;
+
 	a {
 		font-weight: bold;
 		color: #2c3e50;
@@ -131,14 +137,5 @@ button {
 		}
 	}
 }
-.game-area {
-	display: grid;
-	box-sizing: border-box;
-	height: 100%;
-	padding: 60px;
-	grid-template-columns: 10% 10% 10% 10% 10% 10% 10% 10% 10% 10%;
-	grid-template-rows: 25% 25% 25% 25%;
-	justify-content: center;
-	align-items: center;
-}
+
 </style>

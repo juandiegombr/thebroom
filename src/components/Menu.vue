@@ -5,19 +5,19 @@
             <div v-if="showMenu" class="menu" @click.stop="show('inside')">
 		        <i class="fas fa-times close-icon" @click.stop="show"></i>
                 <h1>Start a new game</h1>
-                <div class="buttons">
-                    <button class="the-button" @click="newGame(15)">
+                <div class="menu__buttons-wrapper">
+                    <button class="menu__button" @click="newGame(15)">
                         15pt
                     </button>
-                    <button class="the-button" @click="newGame(25)">
+                    <button class="menu__button" @click="newGame(25)">
                         25pt
                     </button>
-                    <button class="the-button" @click="newGame(40)">
+                    <button class="menu__button" @click="newGame(40)">
                         40pt
                     </button>
                 </div>
                 <h1>Rules</h1>
-                <div class="rules-content">
+                <div class="menu__rules">
                     <p>The game starts with 3 cards to each player and 4 common cards.</p>
                     <p>The rules are simple. Just sum 15!</p>
                     <p>To achieve that properly, you need to choose one of your cards and all cards you need from the common cards.</p>
@@ -33,7 +33,8 @@
                         <li>Cards: Simple, if you get more cards, you'll win 1 point.</li>
                     </ul>
                 </div>
-                <div class="bottom">
+
+                <div class="menu__footer">
                     <a href="https://github.com/juandiegombr/thebroom" target="_blank"><i class="fab fa-github fa-left"></i>Github repository</a>
                     <p>Built with <span class="text-vue">Vue</span> by 
                         <a href="https://www.linkedin.com/in/juandiego-martin/">Juan Diego Martín</a>
@@ -47,22 +48,20 @@
 
 <script>
 export default {
-    name: 'TheMenu',
+    name: 'the-menu',
+
     methods: {
         show (place) {
             if (place === 'inside') return
-            if (this.showMenu) {
-                this.showMenu = false
-                return
-            }
             this.showMenu = !this.showMenu
         },
+
         newGame (points) {
-            console.log(points)
             this.$store.dispatch('resetGame', points)
             this.showMenu = false
         }
     },
+
     data () {
         return {
             showMenu: true
@@ -70,7 +69,9 @@ export default {
     }
 }
 </script>
-<style lang="scss">
+
+<style lang="scss" scoped>
+
 .menu-wrapper {
     position: relative;
     pointer-events: none;
@@ -80,7 +81,6 @@ export default {
     transition: all 1s;
 
     &.shadow {
-        // background-color: $red;
         background-color: rgba(0,0,0,0.5);
         pointer-events: auto;
     }
@@ -102,19 +102,21 @@ export default {
         font-size: .9rem;
         background: linear-gradient(135deg, #0c2430 1%, #0c2430 49%, #0c2430 100%);
         box-shadow: rgba(0, 0, 0, 0.19) 0px 10px 30px, rgba(0, 0, 0, 0.23) 0px 6px 10px;
+        
         @media (min-width: 576px) {
             width: 60%;
             padding: 3rem;
             font-size: 1rem;
         }
 
-        .buttons {
+        &__buttons-wrapper {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             grid-gap: 1rem;
             margin-bottom: 1rem;
         }
-        .the-button {
+
+        &__button {
             user-select: none;
             cursor: pointer;
             display: flex;
@@ -132,7 +134,8 @@ export default {
             // box-shadow: 0 3px 0 0 rgba(0,0,0,.25);
             transition: all .5s;
         }
-        .rules-content {
+
+        &__rules {
             border: 1px solid white;
             border-radius: 1.2rem;
             padding: 1.2rem;
@@ -143,17 +146,20 @@ export default {
             p:first-child {
                 margin-top: 0;
             }
+
             ul:last-child {
                 margin-bottom: 0;
             }
+
             @media (min-width: 576px) {
                 padding: 2rem;
             }
         }
 
-        .bottom {
+        &__footer {
             position: absolute;
             bottom: 1rem;
+
             a {
                 color: white;
                 text-decoration: none;
@@ -205,12 +211,10 @@ export default {
     
     .menu-enter {
         transform: translateX(-100vw);
-        // opacity: 0;
     }
     
     .menu-leave-to {
         transform: translateX(-100vw);
-        // opacity: 0;
     }
 
     .text-vue {
@@ -223,10 +227,10 @@ export default {
     }
 
     .fa-cog {
-        animation: spin1 3s linear infinite;
+        animation: cog-spin 3s linear infinite;
     }
 
-    @keyframes spin1 {
+    @keyframes cog-spin {
         0% {transform: rotate(0deg);}
         100% {transform: rotate(360deg);}
     }
