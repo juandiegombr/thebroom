@@ -32,7 +32,7 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request)
-    .then( response => {
+    .then(response => {
       if (response) {
         console.log('Request found in cache!', event.request.url)
         return response
@@ -47,6 +47,9 @@ self.addEventListener('fetch', (event) => {
       })
       console.warn('Request not found in cache :(', event.request.url)
       return fetch(event.request)
+    })
+    .catch(err => {
+      console.log(err)
     })
   )
 })
