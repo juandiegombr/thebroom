@@ -14,7 +14,7 @@
     }
   ],
   "start_url": "/thebroom",
-  "display": "browser",
+  "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#4DBA87"
 }
