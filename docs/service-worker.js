@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/3.4.1/workbox-sw.js");
 
 importScripts(
-  "/thebroom/precache-manifest.e062e8be31ec519192723ff5ec34aed7.js"
+  "/thebroom/precache-manifest.3ad640993af7e5e12ab2dfb92fd3c00c.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "cards-game"});

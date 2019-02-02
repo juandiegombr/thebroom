@@ -39,12 +39,18 @@ self.addEventListener('fetch', (event) => {
       }
 
       caches.open(CACHE_NAME)
-      .then(cache => {
-        cache.add(event.request)
-          .then(() => {
-            console.log('Request saved in cache!', event.request.url)
+        .then(cache => {
+          cache.add(event.request)
+            .then(() => {
+              console.log('Request saved in cache!', event.request.url)
+            })
+            .catch(err => {
+              console.log(err)
+            })
           })
-      })
+          .catch(err => {
+            console.log(err)
+          })
       console.warn('Request not found in cache :(', event.request.url)
       return fetch(event.request)
     })
