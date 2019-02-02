@@ -5,6 +5,8 @@ var urlsToCache = [
   '/thebroom/chunk-vendors.js',
   '/thebroom/favicon.ico',
   '/thebroom/app.js',
+  '/img/icons/favicon-16x16.png',
+  '/img/icons/favicon-32x32.png',
   '/thebroom/img/icons/favicon-16x16.png',
   '/thebroom/img/icons/favicon-32x32.png',
   '/thebroom/manifest.json',
