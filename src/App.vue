@@ -53,7 +53,7 @@ export default {
 
 		initServiceWorker () {
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/serviceworker.js')
+        navigator.serviceWorker.register(`${process.env.BASE_URL}serviceworker.js`)
           .then(registration => {})
       } else {
         console.log('Your navigator is NOT prepared to use Service Workers')

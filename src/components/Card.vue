@@ -160,7 +160,6 @@ export default {
 				playerDeck: {top: 80, left: 80}
 			}
 			if (newValue === 'smartphone') {
-				console.log('smartphone')
 				this.positions = mobilePositions
 			} else {
 				this.positions = regularPositions
