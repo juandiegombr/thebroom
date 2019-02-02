@@ -51,12 +51,28 @@ export default {
 			}
 			return this.screenSize;
 		},
+
+		initServiceWorker () {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/serviceworker.js')
+          .then(registration => {})
+      } else {
+        console.log('Your navigator is NOT prepared to use Service Workers')
+      }
+		}
+		
 	},
+
+	created () {
+		this.initServiceWorker()
+	},
+
 	mounted () {
 		window.addEventListener('resize', this.handleWindowResize)
 		this.handleWindowResize()
 		this.$store.dispatch('startBroomGame')
 	},
+	
 	components: {
 		Menu,
 		TheCards,

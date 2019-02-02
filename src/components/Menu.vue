@@ -1,10 +1,23 @@
 <template>
 	<div class="menu-wrapper" :class="{'shadow': showMenu}" @click.stop="show">
-		<i class="fas fa-cog help-icon" @click.stop="show"></i>
+		<i class="far fa-question-circle help-icon" @click.stop="show"></i>
         <transition name="menu">
             <div v-if="showMenu" class="menu" @click.stop="show('inside')">
-                <h1>Instructions</h1>
-                <div class="content">
+		        <i class="fas fa-times close-icon" @click.stop="show"></i>
+                <h1>Start a new game</h1>
+                <div class="buttons">
+                    <button class="the-button" @click="newGame(15)">
+                        15pt
+                    </button>
+                    <button class="the-button" @click="newGame(25)">
+                        25pt
+                    </button>
+                    <button class="the-button" @click="newGame(40)">
+                        40pt
+                    </button>
+                </div>
+                <h1>Rules</h1>
+                <div class="rules-content">
                     <p>The game starts with 3 cards to each player and 4 common cards.</p>
                     <p>The rules are simple. Just sum 15!</p>
                     <p>To achieve that properly, you need to choose one of your cards and all cards you need from the common cards.</p>
@@ -20,21 +33,12 @@
                         <li>Cards: Simple, if you get more cards, you'll win 1 point.</li>
                     </ul>
                 </div>
-                <p>Start a new game</p>
-                <div class="buttons">
-                    <button class="the-button" @click="newGame(15)">
-                        15pt
-                    </button>
-                    <button class="the-button" @click="newGame(25)">
-                        25pt
-                    </button>
-                    <button class="the-button" @click="newGame(40)">
-                        40pt
-                    </button>
-                </div>
                 <div class="bottom">
                     <a href="https://github.com/juandiegombr/thebroom" target="_blank"><i class="fab fa-github fa-left"></i>Github repository</a>
-                    <p>Built with Vue by Juan Diego Martín</p>
+                    <p>Built with <span class="text-vue">Vue</span> by 
+                        <a href="https://www.linkedin.com/in/juandiego-martin/">Juan Diego Martín</a>
+                    </p>
+                    <p>Powered by ServiceWorker <i class="fas fa-cog"></i></p>
                 </div>
             </div>
         </transition>
@@ -61,15 +65,12 @@ export default {
     },
     data () {
         return {
-            showMenu: false
+            showMenu: true
         }
     }
 }
 </script>
 <style lang="scss">
-.fa-left {
-    margin-right: .5rem;
-}
 .menu-wrapper {
     position: relative;
     pointer-events: none;
@@ -77,11 +78,13 @@ export default {
     height: 100%;
     z-index: 999;
     transition: all 1s;
+
     &.shadow {
         // background-color: $red;
         background-color: rgba(0,0,0,0.5);
         pointer-events: auto;
     }
+    
     .menu {
         display: flex;
         flex-direction: column;
@@ -104,13 +107,12 @@ export default {
             padding: 3rem;
             font-size: 1rem;
         }
-        h1 {
-            margin-top: 0;
-        }
+
         .buttons {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             grid-gap: 1rem;
+            margin-bottom: 1rem;
         }
         .the-button {
             user-select: none;
@@ -118,10 +120,10 @@ export default {
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 15px;
+            border-radius: 1.2rem;
             padding: 15px;
             background-color: rgba(255, 255, 255, 0);
-            border: 0.1rem solid rgb(186, 186, 186);
+            border: 0.1rem solid white;
             font-weight: 700;
             width: 100%;
             font-size: 17px;
@@ -130,10 +132,14 @@ export default {
             // box-shadow: 0 3px 0 0 rgba(0,0,0,.25);
             transition: all .5s;
         }
-        .content {
-            border: 2px solid white;
-            padding: 1rem;
+        .rules-content {
+            border: 1px solid white;
+            border-radius: 1.2rem;
+            padding: 1.2rem;
             text-align: left;
+            max-height: 30%;
+            overflow: scroll;
+
             p:first-child {
                 margin-top: 0;
             }
@@ -154,6 +160,24 @@ export default {
             }
         }
     }
+
+    .close-icon {
+        pointer-events: auto;
+        position: fixed;
+        top: 2rem;
+        left: 2rem;
+        font-size: 2rem;
+        color: rgba(255, 255, 255, 0.2);
+        cursor: pointer;
+        transition: all .2s;
+        z-index: 9;
+
+        &:hover {
+        color: rgba(255, 255, 255, 0.5);
+        transform: scale(1.2);
+        }
+    }
+
     .help-icon {
         pointer-events: auto;
         position: fixed;
@@ -164,25 +188,47 @@ export default {
         cursor: pointer;
         transition: all .2s;
         z-index: 9;
+
         &:hover {
-        color: rgba(255, 212, 20, 0.3);
-        transform: rotate(50deg);
+        color: rgba(255, 212, 20, 0.5);
+        transform: scale(1.2);
         }
     }
+
     .menu-enter-active {
         transition: all 1s ease-in-out
     }
+    
     .menu-leave-active {
         transition: all 1s ease-in-out
     }
+    
     .menu-enter {
         transform: translateX(-100vw);
         // opacity: 0;
     }
+    
     .menu-leave-to {
         transform: translateX(-100vw);
         // opacity: 0;
+    }
 
+    .text-vue {
+        color: #4fc08d;
+        font-weight: 700;
+    }
+
+    .fa-left {
+        margin-right: .5rem;
+    }
+
+    .fa-cog {
+        animation: spin1 3s linear infinite;
+    }
+
+    @keyframes spin1 {
+        0% {transform: rotate(0deg);}
+        100% {transform: rotate(360deg);}
     }
 }
 </style>

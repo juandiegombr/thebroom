@@ -21,6 +21,7 @@
           You lost!
         </div>
       </div>
+      <div class="results-container">
         <table>
           <tr>
             <th v-for="(column, i) in columns" :key="i">{{ column }}</th>
@@ -29,6 +30,7 @@
             <td v-for="(data, i) in row" :key="i+10">{{ data }}</td>
           </tr>
         </table>
+      </div>
       <div class="buttons" :style="{gridTemplateColumns: isFinished ? '1fr' : '1fr 1fr'}">
 				<button class="the-button" @click="newGame">
 					START A NEW GAME
@@ -181,7 +183,8 @@ export default {
       justify-content: center;
       padding: 15px;
       background-color: transparent;
-      border: 0.1rem solid rgb(186, 186, 186);
+      border: 1px solid white;
+      border-radius: 1.2rem;
       font-weight: 700;
       font-size: 17px;
       color: white;
@@ -196,6 +199,10 @@ export default {
     .fa-right {
       margin-left: .5rem;
     }
+  }
+  .results-container {
+    max-width: 100%;
+    overflow-x: scroll;
   }
   table {
     border-spacing: 0;
