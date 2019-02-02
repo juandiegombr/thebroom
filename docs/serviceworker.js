@@ -28,10 +28,6 @@ self.addEventListener('activate', (event) => {
   console.log('activated')
 })
 self.addEventListener('fetch', (event) => {
-  if (event.request.url.split('/').includes('sockjs-node')) {
-    return
-  }
-  return
   event.respondWith(
     caches.match(event.request)
     .then( response => {
