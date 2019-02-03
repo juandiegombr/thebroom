@@ -5,7 +5,7 @@ A spanish cards game made with Vue. [Rules](https://es.wikipedia.org/wiki/Escoba
 
 ## PLAY NOW!
 
-[https://juandiegombr.github.io/thebroom/]( https://juandiegombr.github.io/thebroom/ )
+[https://the-broom.glitch.me/]( https://the-broom.glitch.me/ )
 
 ## Introduction
 Just make it for fun and learn. Still in beta.
